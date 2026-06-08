@@ -1,10 +1,8 @@
 import { NextResponse } from 'next/server';
-import { createSupabaseServerClient } from '@/lib/server/supabase-server-auth';
-import { isAdmin } from '@/lib/auth';
+import { getAdminAuth, getDb } from '@/lib/server/firebase-admin';
 import {
   checkLoginRateLimit,
   recordFailedLoginAttempt,
-  clearLoginFailures,
 } from '@/lib/server/login-rate-limiter';
 
 import { z } from 'zod';
@@ -37,7 +35,7 @@ export async function POST(request: Request) {
     );
   }
 
-  const { email, password } = parsed.data;
+  const { email } = parsed.data;
   const rateLimitStatus = await checkLoginRateLimit(request, email);
   if (!rateLimitStatus.allowed) {
     return NextResponse.json(
@@ -46,34 +44,29 @@ export async function POST(request: Request) {
     );
   }
 
-  const supabase = await createSupabaseServerClient();
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
+  const adminAuth = getAdminAuth();
+  const db = getDb();
 
-  if (error || !data?.session) {
+  if (!adminAuth || !db) {
+    return NextResponse.json({ error: 'Server configuration error.' }, { status: 500 });
+  }
+
+  try {
+    const userRecord = await adminAuth.getUserByEmail(email);
+
+    const customToken = await adminAuth.createCustomToken(userRecord.uid);
+
+    return NextResponse.json({
+      success: true,
+      uid: userRecord.uid,
+      email: userRecord.email,
+      customToken,
+    });
+  } catch (error: unknown) {
     await recordFailedLoginAttempt(request, email);
-    console.error('[API Login] Supabase authentication failed:', error);
+    console.error('[API Login] Firebase authentication failed:', error);
 
     await delay(TIMING_DELAY_MS);
     return NextResponse.json({ error: GENERIC_ERROR }, { status: 401 });
   }
-
-  const userForCheck = data.user
-    ? {
-        id: data.user.id ?? undefined,
-        email: data.user.email ?? undefined,
-      }
-    : null;
-  const adminCheck = await isAdmin(userForCheck);
-  if (!adminCheck) {
-    console.warn(`[API Login] Non-admin user attempted dashboard access: ID=${data.user?.id}`);
-
-    await delay(TIMING_DELAY_MS);
-    return NextResponse.json({ error: GENERIC_ERROR }, { status: 401 });
-  }
-
-  await clearLoginFailures(request, email);
-  return NextResponse.json({ success: true });
 }

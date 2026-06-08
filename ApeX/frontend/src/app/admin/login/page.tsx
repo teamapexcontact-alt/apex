@@ -3,6 +3,8 @@
 import { FormEvent, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { getFirebaseAuth } from '@/lib/firebase';
+import { signInWithEmailAndPassword } from 'firebase/auth';
 import '@/components/admin/admin.css';
 
 export default function AdminLogin() {
@@ -18,16 +20,19 @@ export default function AdminLogin() {
     setError('');
 
     try {
-      const response = await fetch('/api/auth/login', {
+      const auth = getFirebaseAuth();
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const idToken = await userCredential.user.getIdToken();
+
+      const response = await fetch('/api/auth/session', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ idToken }),
       });
 
-      const data = await response.json();
-
       if (!response.ok) {
-        throw new Error(data.error || 'Unable to sign in.');
+        const data = await response.json();
+        throw new Error(data.error || 'Failed to create session.');
       }
 
       router.refresh();

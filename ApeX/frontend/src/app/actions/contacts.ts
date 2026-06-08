@@ -1,7 +1,6 @@
 'use server';
 
-import { supabaseAdmin } from '@/lib/server/supabase-server';
-import { protectAdminRoute } from '@/lib/auth';
+import { getDb } from '@/lib/server/firebase-admin';
 import type { ContactRequest } from '@/types';
 
 export interface PaginatedSubmissionsResult {
@@ -15,32 +14,26 @@ export async function getContactSubmissions(
   cursor: string | null = null
 ): Promise<{ success: boolean; data?: PaginatedSubmissionsResult; error?: string }> {
   try {
-    const auth = await protectAdminRoute();
-    if (!auth.authorized) {
-      throw new Error('Unauthorized');
-    }
+    const db = getDb();
+    if (!db) throw new Error('Firestore not configured.');
 
-    const client = supabaseAdmin;
-    if (!client) throw new Error('Supabase admin client not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in the environment.');
-
-    let query = client
-      .from('contact_requests')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(limit + 1); // Fetch one extra to determine if there are more results
+    let query = db.collection('contact_requests').orderBy('created_at', 'desc').limit(limit + 1);
 
     if (cursor) {
-      query = query.lt('created_at', cursor);
+      const cursorDoc = await db.collection('contact_requests').doc(cursor).get();
+      if (cursorDoc.exists) {
+        query = query.startAfter(cursorDoc);
+      }
     }
 
-    const { data, error } = await query;
+    const snapshot = await query.get();
+    const submissions = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    })) as unknown as ContactRequest[];
 
-    if (error) throw error;
-
-    const submissions = data || [];
     const hasMore = submissions.length > limit;
-    const nextCursor = hasMore ? submissions[limit - 1]?.created_at || null : null;
-
+    const nextCursor = hasMore ? (submissions[limit - 1] as unknown as { id: string }).id || null : null;
     const paginatedSubmissions = hasMore ? submissions.slice(0, limit) : submissions;
 
     return {
@@ -57,35 +50,21 @@ export async function getContactSubmissions(
   }
 }
 
-// Legacy function for backward compatibility (fetches records with hard limit for performance)
-// ⚠️ DEPRECATED: Use getContactSubmissions() with cursor-based pagination instead
-// This function now enforces a hard limit of 1000 records to prevent memory exhaustion
 export async function getAllContactSubmissions() {
   try {
-    const auth = await protectAdminRoute();
-    if (!auth.authorized) {
-      throw new Error('Unauthorized');
-    }
+    const db = getDb();
+    if (!db) throw new Error('Firestore not configured.');
 
-    const client = supabaseAdmin;
-    if (!client) throw new Error('Supabase admin client not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in the environment.');
+    const HARD_LIMIT = 1000;
+    const snapshot = await db.collection('contact_requests')
+      .orderBy('created_at', 'desc')
+      .limit(HARD_LIMIT)
+      .get();
 
-    const HARD_LIMIT = 1000; // Safety limit to prevent unbounded queries
-
-    const { data, error } = await client
-      .from('contact_requests')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(HARD_LIMIT);
-
-    if (error) throw error;
-    
-    if (data && data.length === HARD_LIMIT) {
-      console.warn(
-        `getAllContactSubmissions() reached hard limit of ${HARD_LIMIT} records. ` +
-        'Use getContactSubmissions() with cursor-based pagination for better performance.'
-      );
-    }
+    const data = snapshot.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
 
     return { success: true, data, _note: 'Use cursor-based pagination for large datasets' };
   } catch (error: unknown) {
@@ -96,20 +75,10 @@ export async function getAllContactSubmissions() {
 
 export async function deleteContactSubmission(id: string) {
   try {
-    const auth = await protectAdminRoute();
-    if (!auth.authorized) {
-      throw new Error('Unauthorized');
-    }
+    const db = getDb();
+    if (!db) throw new Error('Firestore not configured.');
 
-    const client = supabaseAdmin;
-    if (!client) throw new Error('Supabase admin client not configured.');
-
-    const { error } = await client
-      .from('contact_requests')
-      .delete()
-      .eq('id', id);
-
-    if (error) throw error;
+    await db.collection('contact_requests').doc(id).delete();
     return { success: true };
   } catch (error: unknown) {
     console.error('Error deleting submission:', error);
@@ -129,67 +98,46 @@ export async function loadMoreSubmissions(cursor: string | null, limit: number =
 
 export async function getAdminDashboardData(limit: number = 20) {
   try {
-    const auth = await protectAdminRoute();
-    if (!auth.authorized) {
-      throw new Error('Unauthorized');
-    }
-
-    const client = supabaseAdmin;
-    if (!client) throw new Error('Supabase admin client not configured. Set SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY in the environment.');
+    const db = getDb();
+    if (!db) throw new Error('Firestore not configured.');
 
     const today = new Date();
-    const todayStart = new Date(today);
-    todayStart.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
 
     const weekAgo = new Date(today);
     weekAgo.setDate(weekAgo.getDate() - 7);
-    weekAgo.setHours(0, 0, 0, 0);
 
-    const submissionsQuery = client
-      .from('contact_requests')
-      .select('*')
-      .order('created_at', { ascending: false })
-      .limit(limit + 1);
+    const submissionsSnap = await db.collection('contact_requests')
+      .orderBy('created_at', 'desc')
+      .limit(limit + 1)
+      .get();
 
-    const [submissionsResult, totalResult, todayResult, weekResult] = await Promise.all([
-      submissionsQuery,
-      client
-        .from('contact_requests')
-        .select('id', { count: 'exact', head: true }),
-      client
-        .from('contact_requests')
-        .select('id', { count: 'exact', head: true })
-        .gte('created_at', todayStart.toISOString()),
-      client
-        .from('contact_requests')
-        .select('id', { count: 'exact', head: true })
-        .gte('created_at', weekAgo.toISOString()),
-    ]);
+    const totalSnap = await db.collection('contact_requests').count().get();
+    const todaySnap = await db.collection('contact_requests')
+      .where('created_at', '>=', today.toISOString())
+      .count().get();
+    const weekSnap = await db.collection('contact_requests')
+      .where('created_at', '>=', weekAgo.toISOString())
+      .count().get();
 
-    if (submissionsResult.error) throw submissionsResult.error;
-    if (totalResult.error) throw totalResult.error;
-    if (todayResult.error) throw todayResult.error;
-    if (weekResult.error) throw weekResult.error;
+    const submissions = submissionsSnap.docs.map((doc) => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
 
-    const submissions = submissionsResult.data || [];
     const hasMore = submissions.length > limit;
-    const nextCursor = hasMore ? submissions[limit - 1]?.created_at || null : null;
-
-    // Remove the extra record if we fetched more than the limit
+    const nextCursor = hasMore ? submissions[limit - 1]?.id || null : null;
     const paginatedSubmissions = hasMore ? submissions.slice(0, limit) : submissions;
 
     return {
       success: true,
       data: {
         submissions: paginatedSubmissions,
-        pagination: {
-          nextCursor,
-          hasMore,
-        },
+        pagination: { nextCursor, hasMore },
         stats: {
-          total: totalResult.count ?? 0,
-          today: todayResult.count ?? 0,
-          week: weekResult.count ?? 0,
+          total: totalSnap.data().count,
+          today: todaySnap.data().count,
+          week: weekSnap.data().count,
         },
       },
     };
@@ -201,47 +149,27 @@ export async function getAdminDashboardData(limit: number = 20) {
 
 export async function getContactStats() {
   try {
-    const auth = await protectAdminRoute();
-    if (!auth.authorized) {
-      throw new Error('Unauthorized');
-    }
-
-    const client = supabaseAdmin;
-    if (!client) throw new Error('Supabase admin client not configured.');
+    const db = getDb();
+    if (!db) throw new Error('Firestore not configured.');
 
     const today = new Date();
-    const todayStart = new Date(today);
-    todayStart.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
 
     const weekAgo = new Date(today);
     weekAgo.setDate(weekAgo.getDate() - 7);
-    weekAgo.setHours(0, 0, 0, 0);
 
-    // Use count queries instead of fetching all records
-    const [totalResult, todayResult, weekResult] = await Promise.all([
-      client
-        .from('contact_requests')
-        .select('id', { count: 'exact', head: true }),
-      client
-        .from('contact_requests')
-        .select('id', { count: 'exact', head: true })
-        .gte('created_at', todayStart.toISOString()),
-      client
-        .from('contact_requests')
-        .select('id', { count: 'exact', head: true })
-        .gte('created_at', weekAgo.toISOString()),
+    const [totalSnap, todaySnap, weekSnap] = await Promise.all([
+      db.collection('contact_requests').count().get(),
+      db.collection('contact_requests').where('created_at', '>=', today.toISOString()).count().get(),
+      db.collection('contact_requests').where('created_at', '>=', weekAgo.toISOString()).count().get(),
     ]);
-
-    if (totalResult.error) throw totalResult.error;
-    if (todayResult.error) throw todayResult.error;
-    if (weekResult.error) throw weekResult.error;
 
     return {
       success: true,
       data: {
-        total: totalResult.count ?? 0,
-        today: todayResult.count ?? 0,
-        week: weekResult.count ?? 0,
+        total: totalSnap.data().count,
+        today: todaySnap.data().count,
+        week: weekSnap.data().count,
       },
     };
   } catch (error: unknown) {

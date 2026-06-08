@@ -1,4 +1,4 @@
-import { supabaseAdmin } from "./supabase-server";
+import { getDb } from "./firebase-admin";
 import crypto from "crypto";
 
 interface RateLimitResult {
@@ -15,62 +15,47 @@ interface RateLimitConfig {
 }
 
 const DEFAULT_CONFIG: RateLimitConfig = {
-  maxRequests: 5, // 5 requests per window
-  windowMs: 60 * 60 * 1000, // 1 hour window
+  maxRequests: 5,
+  windowMs: 60 * 60 * 1000,
 };
 
-/**
- * Extract client IP address from request headers
- */
 export function getTrustedClientIp(request: Request): string {
   const headers = request.headers;
 
   const cfConnectingIp = headers.get("cf-connecting-ip");
-  if (cfConnectingIp) {
-    return cfConnectingIp.trim();
-  }
+  if (cfConnectingIp) return cfConnectingIp.trim();
 
   const vercelForwardedFor = headers.get("x-vercel-forwarded-for");
-  if (vercelForwardedFor) {
-    return vercelForwardedFor.split(",")[0].trim();
-  }
+  if (vercelForwardedFor) return vercelForwardedFor.split(",")[0].trim();
 
   const realIp = headers.get("x-real-ip");
-  if (realIp) {
-    return realIp.trim();
-  }
+  if (realIp) return realIp.trim();
 
   const forwarded = headers.get("x-forwarded-for");
-  if (forwarded) {
-    return forwarded.split(",")[0].trim();
-  }
+  if (forwarded) return forwarded.split(",")[0].trim();
 
   return "unknown";
 }
 
-/**
- * Clean up old rate limit records
- */
 async function cleanupOldRateLimits(): Promise<void> {
-  if (!supabaseAdmin) return;
-  
+  const db = getDb();
+  if (!db) return;
+
   try {
-    const { error } = await supabaseAdmin
-      .from("rate_limit_log")
-      .delete()
-      .lt("submitted_at", new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString()); // 2 hours ago
-    
-    if (error) {
-      console.error("Rate limit cleanup failed:", error);
-    }
+    const twoHoursAgo = new Date(Date.now() - 2 * 60 * 60 * 1000);
+    const oldDocs = await db.collection("rate_limit_log")
+      .where("submitted_at", "<", twoHoursAgo.toISOString())
+      .limit(100)
+      .get();
+
+    const batch = db.batch();
+    oldDocs.docs.forEach((doc) => batch.delete(doc.ref));
+    await batch.commit();
   } catch (error) {
     console.error("Rate limit cleanup error:", error);
   }
 }
 
-/**
- * Check if a request should be rate limited
- */
 export async function checkRateLimit(
   request: Request,
   config: Partial<RateLimitConfig> = {}
@@ -79,8 +64,9 @@ export async function checkRateLimit(
   const clientIp = getTrustedClientIp(request);
   const ipHash = crypto.createHash("sha256").update(clientIp).digest("hex");
 
-  if (!supabaseAdmin) {
-    console.warn("Supabase not configured for rate limiting. Allowing requests to proceed without rate limiting.");
+  const db = getDb();
+  if (!db) {
+    console.warn("Firestore not configured for rate limiting. Allowing requests.");
     return {
       allowed: true,
       limit: finalConfig.maxRequests,
@@ -90,50 +76,29 @@ export async function checkRateLimit(
   }
 
   try {
-    // Periodically clean up old records (10% chance to avoid excessive cleanup calls)
     if (Math.random() < 0.1) {
       await cleanupOldRateLimits();
     }
 
-    const now = new Date();
     const windowStart = new Date(Date.now() - finalConfig.windowMs);
 
-    // Count existing submissions for this IP hash in the active window
-    const { count, error: countError } = await supabaseAdmin
-      .from("rate_limit_log")
-      .select("id", { count: "exact", head: true })
-      .eq("ip_hash", ipHash)
-      .eq("endpoint", "contact")
-      .gte("submitted_at", windowStart.toISOString());
+    const snapshot = await db.collection("rate_limit_log")
+      .where("ip_hash", "==", ipHash)
+      .where("endpoint", "==", "contact")
+      .where("submitted_at", ">=", windowStart.toISOString())
+      .get();
 
-    if (countError) {
-      console.error("Rate limit check query failed:", countError);
-      return {
-        allowed: false,
-        limit: finalConfig.maxRequests,
-        remaining: 0,
-        resetTime: new Date(Date.now() + finalConfig.windowMs),
-        error: "Rate limit check failed",
-      };
-    }
+    const requestCount = snapshot.size;
 
-    const requestCount = count ?? 0;
-
-    // Check if limit exceeded
     if (requestCount >= finalConfig.maxRequests) {
-      // Fetch the oldest submission in the current window to determine when it expires
-      const { data: oldestRecord } = await supabaseAdmin
-        .from("rate_limit_log")
-        .select("submitted_at")
-        .eq("ip_hash", ipHash)
-        .eq("endpoint", "contact")
-        .gte("submitted_at", windowStart.toISOString())
-        .order("submitted_at", { ascending: true })
-        .limit(1)
-        .maybeSingle();
+      const oldestDoc = snapshot.docs.sort((a, b) => {
+        const aTime = new Date(a.data().submitted_at).getTime();
+        const bTime = new Date(b.data().submitted_at).getTime();
+        return aTime - bTime;
+      })[0];
 
-      const oldestTime = oldestRecord?.submitted_at
-        ? new Date(oldestRecord.submitted_at).getTime()
+      const oldestTime = oldestDoc
+        ? new Date(oldestDoc.data().submitted_at).getTime()
         : Date.now() - finalConfig.windowMs;
 
       return {
@@ -144,30 +109,20 @@ export async function checkRateLimit(
       };
     }
 
-    // Insert log entry for the current request
-    const { error: insertError } = await supabaseAdmin
-      .from("rate_limit_log")
-      .insert([
-        {
-          ip_hash: ipHash,
-          endpoint: "contact",
-          submitted_at: now.toISOString(),
-        },
-      ]);
-
-    if (insertError) {
-      console.error("Failed to record rate limit entry:", insertError);
-    }
+    await db.collection("rate_limit_log").add({
+      ip_hash: ipHash,
+      endpoint: "contact",
+      submitted_at: new Date().toISOString(),
+    });
 
     return {
       allowed: true,
       limit: finalConfig.maxRequests,
       remaining: finalConfig.maxRequests - requestCount - 1,
-      resetTime: new Date(now.getTime() + finalConfig.windowMs),
+      resetTime: new Date(Date.now() + finalConfig.windowMs),
     };
   } catch (error) {
     console.error("Rate limiting error:", error);
-    // Fail closed on unexpected rate limiting failures
     return {
       allowed: false,
       limit: finalConfig.maxRequests,
@@ -178,9 +133,6 @@ export async function checkRateLimit(
   }
 }
 
-/**
- * Middleware function to check rate limits and return error response if exceeded
- */
 export async function rateLimitMiddleware(
   request: Request,
   config?: Partial<RateLimitConfig>

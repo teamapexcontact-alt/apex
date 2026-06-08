@@ -1,4 +1,4 @@
-import { headers } from 'next/headers';
+import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import type { Metadata } from 'next';
 import { protectAdminRoute } from '@/lib/auth';
@@ -16,19 +16,17 @@ export const metadata: Metadata = generatePageMetadata({
 });
 
 export default async function AdminPage() {
-  // Protect the route using secure cookie/session auth
   const auth = await protectAdminRoute();
 
   if (!auth.authorized) {
     redirect(auth.redirect || '/admin/login');
   }
 
-  // Fetch dashboard data through a protected API route for admin operations.
-  const headersList = await headers();
-  const host = headersList.get('x-forwarded-host') ?? headersList.get('host');
-  const proto = headersList.get('x-forwarded-proto') ?? 'https';
+  const cookieStore = await cookies();
+  const host = cookieStore.get('x-forwarded-host')?.value;
+  const proto = cookieStore.get('x-forwarded-proto')?.value || 'https';
   const origin = host ? `${proto}://${host}` : process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
-  
+
   interface AdminContactResponse {
     success: boolean;
     data?: {
@@ -58,10 +56,15 @@ export default async function AdminPage() {
   let fetchError = '';
 
   try {
+    const cookieHeader = cookieStore.get('__session')
+      ? `__session=${cookieStore.get('__session')!.value}`
+      : '';
+
     const response = await fetch(`${origin}/api/admin/contact?includeStats=true&limit=20`, {
       cache: 'no-store',
       headers: {
-        cookie: headersList.get('cookie') ?? '',
+        cookie: cookieHeader,
+        authorization: `Bearer ${cookieStore.get('__session')?.value || ''}`,
       },
     });
 
@@ -95,7 +98,7 @@ export default async function AdminPage() {
         <div className="max-w-xl w-full rounded-3xl bg-bg-elevated border border-white/10 p-10 text-center">
           <h1 className="text-2xl font-semibold text-white mb-4">Admin Dashboard</h1>
           <p className="text-text-muted mb-6">
-            There was a problem loading contact submissions. Please check the server logs or your Supabase configuration.
+            There was a problem loading contact submissions. Please check the server logs or your Firebase configuration.
           </p>
           <p className="text-sm text-text-muted">{fetchError || (result ? result.error : 'Unknown error occurred.')}</p>
         </div>
