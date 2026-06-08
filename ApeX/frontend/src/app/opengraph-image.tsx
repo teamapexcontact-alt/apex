@@ -1,7 +1,6 @@
 import { ImageResponse } from "next/og";
 import { siteConfig, SITE_TAGLINE } from "@/lib/seo";
 
-export const runtime = "edge";
 export const alt = `${siteConfig.name} — ${SITE_TAGLINE}`;
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
@@ -76,6 +75,7 @@ export default async function OpenGraphImage() {
                 fontWeight: 800,
                 letterSpacing: "-0.02em",
                 color: "#ffffff",
+                display: "flex",
               }}
             >
               {siteConfig.name}
@@ -87,6 +87,7 @@ export default async function OpenGraphImage() {
                 textTransform: "uppercase",
                 color: "rgba(255,255,255,0.55)",
                 marginTop: 4,
+                display: "flex",
               }}
             >
               Digital Studio
@@ -111,9 +112,10 @@ export default async function OpenGraphImage() {
               color: "#d4f000",
               marginBottom: 28,
               fontWeight: 600,
+              display: "flex",
             }}
           >
-            ✦ {siteConfig.location.city} · Worldwide
+            {siteConfig.location.city} - Worldwide
           </div>
           <div
             style={{
@@ -171,7 +173,7 @@ export default async function OpenGraphImage() {
               fontSize: 14,
             }}
           >
-            Build · Automate · Scale
+            Build - Automate - Scale
           </div>
         </div>
       </div>

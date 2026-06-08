@@ -1,14 +1,6 @@
-import type { Metadata } from "next";
 import Link from "next/link";
-import { generatePageMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = generatePageMetadata({
-  title: "Page Not Found",
-  description:
-    "The page you are looking for could not be found. Explore premium digital experiences, AI automation, and brand systems by ApeX Studio.",
-  path: "/404",
-  noIndex: true,
-});
+export const dynamic = "force-dynamic";
 
 export default function NotFound() {
   return (
