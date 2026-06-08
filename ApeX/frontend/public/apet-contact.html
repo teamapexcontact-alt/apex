@@ -1,0 +1,1428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ApeX — Immersive Digital Experiences</title>
+<meta name="description" content="Premium cinematic web design, AI product posters & 3D brand experiences. Elevate your digital presence with ApeX Studio.">
+<link rel="icon" type="image/svg+xml" href="/icon.svg">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Syne:wght@600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --lime: #c8f400;
+    --bg: #0e0e0e;
+    --surface: rgba(15, 15, 15, 0.7);
+    --surface2: #161616;
+    --border: rgba(255, 255, 255, 0.08);
+    --border-focus: #c8f400;
+    --text: #ffffff;
+    --muted: #888888;
+    --muted2: #444444;
+    --error: #ef4444;
+  }
+
+  *, *::before, *::after { 
+    box-sizing: border-box; 
+    margin: 0; 
+    padding: 0; 
+    border-radius: 0 !important; /* Strict geometric sharp corners */
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    line-height: 1.6;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* Noise Grain Overlay */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    opacity: 0.025;
+    pointer-events: none;
+    z-index: 9999;
+  }
+
+  /* Blueprint Grid background */
+  .grid-overlay {
+    position: fixed;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+      linear-gradient(to right, rgba(255, 255, 255, 0.015) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.015) 1px, transparent 1px);
+    background-size: 60px 60px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Ambient radial glows behind page contents */
+  .glow-container {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+  }
+  
+  .glow-blob-1 {
+    position: absolute;
+    top: 15%;
+    right: -10%;
+    width: 60vw;
+    height: 50vh;
+    background: radial-gradient(circle, rgba(200, 244, 0, 0.04) 0%, transparent 70%);
+    filter: blur(120px);
+  }
+
+  .glow-blob-2 {
+    position: absolute;
+    bottom: 20%;
+    left: -15%;
+    width: 50vw;
+    height: 50vh;
+    background: radial-gradient(circle, rgba(200, 244, 0, 0.025) 0%, transparent 70%);
+    filter: blur(140px);
+  }
+
+  /* ─── NAVBAR ─── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 40px;
+    height: 80px;
+    background: rgba(10, 10, 10, 0.85);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .nav-logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 22px;
+    font-weight: 800;
+    letter-spacing: 4px;
+    color: var(--text);
+    text-decoration: none;
+  }
+  .nav-logo span { color: var(--lime); }
+
+  .nav-links {
+    display: flex;
+    gap: 36px;
+    list-style: none;
+  }
+  .nav-links a {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.25s ease;
+    position: relative;
+    padding: 6px 0;
+  }
+  .nav-links a::after {
+    content: "";
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 0; height: 1px;
+    background-color: var(--lime);
+    transition: width 0.25s ease;
+  }
+  .nav-links a:hover::after,
+  .nav-links a.active::after {
+    width: 100%;
+  }
+  .nav-links a:hover { color: var(--text); }
+  .nav-links a.active { color: var(--lime); }
+
+  .nav-cta {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--bg);
+    background: var(--lime);
+    border: 1px solid var(--lime);
+    padding: 12px 24px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: all 0.25s ease;
+  }
+  .nav-cta:hover {
+    background: transparent;
+    color: var(--lime);
+  }
+
+  /* ─── HERO ─── */
+  .hero {
+    padding-top: 80px;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    padding-bottom: 20px;
+    z-index: 1;
+  }
+
+  .hero-bg-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(80px, 18vw, 240px);
+    font-weight: 800;
+    letter-spacing: 12px;
+    color: rgba(255, 255, 255, 0.025);
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+    z-index: 0;
+  }
+
+  .hero-inner {
+    position: relative;
+    z-index: 1;
+    padding: 80px 40px 40px;
+  }
+
+  .hero-label {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3.5px;
+    text-transform: uppercase;
+    color: var(--lime);
+    margin-bottom: 24px;
+  }
+  .hero-label::before,
+  .hero-label::after {
+    content: '';
+    display: block;
+    width: 24px;
+    height: 1px;
+    background: var(--lime);
+    opacity: 0.7;
+  }
+
+  .hero h1 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(54px, 8.5vw, 105px);
+    font-weight: 300;
+    letter-spacing: -1.5px;
+    line-height: 0.95;
+    margin-bottom: 24px;
+    text-transform: uppercase;
+  }
+
+  .hero h1 em {
+    font-style: italic;
+    color: var(--lime);
+  }
+
+  .hero p {
+    max-width: 520px;
+    margin: 0 auto;
+    color: var(--muted);
+    font-size: 15.5px;
+    line-height: 1.7;
+    font-weight: 300;
+  }
+
+  /* ─── MAIN CONTACT SECTION ─── */
+  .contact-section {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 40px 40px 120px;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 80px;
+    align-items: start;
+    position: relative;
+    z-index: 1;
+  }
+
+  @media (min-width: 1024px) {
+    .contact-section {
+      grid-template-columns: 5fr 5.5fr;
+      gap: 80px;
+    }
+  }
+
+  /* Scroll reveal elements */
+  .reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1), transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  /* ─── LEFT PANEL ─── */
+  .left-panel {
+    padding-right: 0;
+  }
+
+  @media (min-width: 1024px) {
+    .left-panel {
+      padding-right: 40px;
+    }
+  }
+
+  .section-eyebrow {
+    font-family: 'Syne', sans-serif;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--lime);
+    margin-bottom: 20px;
+  }
+
+  .left-panel h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(38px, 4.5vw, 64px);
+    font-weight: 300;
+    line-height: 1.05;
+    letter-spacing: -0.8px;
+    margin-bottom: 24px;
+    text-transform: uppercase;
+  }
+
+  .left-panel .subtitle {
+    color: var(--muted);
+    font-size: 14.5px;
+    line-height: 1.75;
+    margin-bottom: 48px;
+    max-width: 440px;
+  }
+
+  .expect-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 28px;
+    opacity: 0.6;
+  }
+
+  .expect-list {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    margin-bottom: 48px;
+  }
+
+  .expect-list li {
+    display: flex;
+    align-items: flex-start;
+    gap: 18px;
+    padding: 16px;
+    border: 1px solid transparent;
+    transition: all 0.25s ease;
+  }
+
+  .expect-list li:hover {
+    background: rgba(255, 255, 255, 0.015);
+    border-color: var(--border);
+  }
+
+  .expect-icon {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    border: 1px solid var(--lime);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px;
+    transition: transform 0.25s ease;
+  }
+  .expect-list li:hover .expect-icon {
+    transform: scale(1.1) rotate(90deg);
+  }
+  .expect-icon svg { width: 12px; height: 12px; }
+
+  .expect-list strong {
+    display: block;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14.5px;
+    font-weight: 500;
+    color: var(--text);
+    margin-bottom: 4px;
+    letter-spacing: 0.2px;
+  }
+
+  .expect-list span {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+  }
+
+  .contact-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 32px;
+    padding-left: 16px;
+  }
+
+  .contact-meta a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 13.5px;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+    width: fit-content;
+  }
+  .contact-meta a:hover { color: var(--lime); }
+  .contact-meta a svg { width: 18px; height: 18px; flex-shrink: 0; stroke-width: 1.5; }
+
+  .responds-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Syne', sans-serif;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    border: 1px solid var(--border);
+    background-color: rgba(255, 255, 255, 0.02);
+    padding: 8px 16px;
+    margin-left: 16px;
+  }
+  .responds-badge .dot {
+    width: 6px; height: 6px;
+    background: var(--lime);
+    animation: pulse 1.8s infinite ease-in-out;
+  }
+  @keyframes pulse {
+    0%, 100% { transform: scale(0.8); opacity: 1; }
+    50% { transform: scale(1.6); opacity: 0.2; }
+  }
+
+  /* ─── RIGHT PANEL (FORM CARD) ─── */
+  .right-panel {
+    background: var(--surface);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid var(--border);
+    padding: 56px 48px;
+    position: relative;
+    box-shadow: 
+      0 32px 80px rgba(0, 0, 0, 0.6), 
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  }
+
+  /* Corner junctions plus markers */
+  .corner-plus {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    pointer-events: none;
+    z-index: 5;
+  }
+  .corner-plus::before,
+  .corner-plus::after {
+    content: '';
+    position: absolute;
+    background: var(--lime);
+    opacity: 0.5;
+  }
+  .corner-plus::before { top: 5px; left: 0; width: 12px; height: 1px; }
+  .corner-plus::after { top: 0; left: 5px; width: 1px; height: 12px; }
+  .corner-plus.tl { top: -6px; left: -6px; }
+  .corner-plus.tr { top: -6px; right: -6px; }
+  .corner-plus.bl { bottom: -6px; left: -6px; }
+  .corner-plus.br { bottom: -6px; right: -6px; }
+
+  .form-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  @media (min-width: 640px) {
+    .form-row {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+
+  .field {
+    display: flex;
+    flex-direction: column;
+    margin-bottom: 22px;
+    position: relative;
+  }
+  .field:last-child { margin-bottom: 0; }
+
+  .field input,
+  .field select,
+  .field textarea {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14.5px;
+    padding: 22px 16px 8px 16px; /* Space on top for label */
+    outline: none;
+    transition: all 0.25s ease-in-out;
+    width: 100%;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  .field label {
+    position: absolute;
+    left: 16px;
+    top: 18px;
+    font-family: 'Syne', sans-serif;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--muted);
+    transition: all 0.25s cubic-bezier(0.25, 0.8, 0.25, 1);
+    pointer-events: none;
+    transform-origin: left top;
+  }
+
+  .field label span { color: var(--lime); margin-left: 2px; }
+
+  /* Floating states when active or value present */
+  .field input:focus ~ label,
+  .field input.has-value ~ label,
+  .field select:focus ~ label,
+  .field select.has-value ~ label,
+  .field textarea:focus ~ label,
+  .field textarea.has-value ~ label {
+    transform: translateY(-10px) scale(0.78);
+    color: var(--lime);
+  }
+
+  .field input:focus,
+  .field select:focus,
+  .field textarea:focus {
+    border-color: var(--border-focus);
+    box-shadow: 
+      0 0 0 1px var(--lime),
+      0 0 20px rgba(200, 244, 0, 0.08);
+  }
+
+  /* Validation errors style */
+  .field input.has-error,
+  .field select.has-error,
+  .field textarea.has-error {
+    border-color: var(--error) !important;
+    box-shadow: 0 0 0 1px var(--error) !important;
+  }
+
+  .field select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23c8f400' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 18px center;
+    cursor: pointer;
+    padding-right: 44px;
+  }
+  .field select option { background: #161616; color: var(--text); }
+
+  .field textarea {
+    resize: vertical;
+    min-height: 120px;
+    line-height: 1.6;
+  }
+
+  /* timeline/budget pills */
+  .pills-group {
+    margin-bottom: 22px;
+  }
+  .pills-label {
+    font-family: 'Syne', sans-serif;
+    font-size: 10.5px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text);
+    margin-bottom: 10px;
+    display: block;
+  }
+  .pills-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  .pill-btn {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'Syne', sans-serif;
+    font-size: 10.5px;
+    font-weight: 700;
+    padding: 10px 18px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .pill-btn:hover {
+    border-color: rgba(200, 244, 0, 0.5);
+    color: var(--text);
+  }
+  .pill-btn.active {
+    background: var(--lime);
+    color: var(--bg);
+    border-color: var(--lime);
+    box-shadow: 0 0 15px rgba(200, 244, 0, 0.2);
+  }
+
+  /* Submit Button */
+  .submit-btn {
+    width: 100%;
+    background: var(--lime);
+    color: var(--bg);
+    font-family: 'Syne', sans-serif;
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    border: 1px solid var(--lime);
+    padding: 18px 24px;
+    cursor: pointer;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.25s ease;
+  }
+
+  /* Sweep animation effect */
+  .submit-btn::before {
+    content: "";
+    position: absolute;
+    top: 0; left: -100%;
+    width: 50%; height: 100%;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgba(255, 255, 255, 0.4),
+      transparent
+    );
+    transform: skewX(-25deg);
+    pointer-events: none;
+  }
+
+  .submit-btn:hover {
+    background: transparent;
+    color: var(--lime);
+    border-color: var(--lime);
+  }
+
+  .submit-btn:hover::before {
+    left: 150%;
+    transition: left 0.6s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .submit-btn svg {
+    transition: transform 0.2s ease;
+  }
+
+  .submit-btn:hover svg {
+    transform: translateX(4px);
+  }
+
+  .submit-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+
+  .form-note {
+    text-align: center;
+    font-size: 11.5px;
+    color: var(--muted);
+    margin-top: 16px;
+    letter-spacing: 0.5px;
+    font-weight: 400;
+  }
+
+  /* Error Banner */
+  .error-banner {
+    display: none;
+    background: rgba(239, 68, 68, 0.08);
+    border: 1px solid rgba(239, 68, 68, 0.25);
+    color: var(--error);
+    padding: 12px 16px;
+    font-size: 13.5px;
+    margin-bottom: 20px;
+    font-family: 'DM Sans', sans-serif;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .error-banner svg {
+    width: 16px; height: 16px;
+    flex-shrink: 0;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+  }
+
+  /* Shake animation for invalid fields */
+  @keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
+  }
+  .shake {
+    animation: shake 0.35s ease-in-out;
+  }
+
+  /* ─── SUCCESS STATE ─── */
+  .success-container {
+    display: none; /* Managed by JS */
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    min-height: 480px;
+    animation: fadeIn 0.4s ease-out;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.98); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  .success-icon-svg {
+    width: 80px; height: 80px;
+    margin-bottom: 28px;
+    filter: drop-shadow(0 0 15px rgba(200, 244, 0, 0.15));
+  }
+  
+  .success-circle {
+    stroke-dasharray: 166;
+    stroke-dashoffset: 166;
+    stroke-width: 1.5;
+    stroke-miterlimit: 10;
+    stroke: var(--lime);
+    fill: none;
+    animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+  }
+  
+  .success-check {
+    transform-origin: 50% 50%;
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    stroke: var(--lime);
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.6s forwards;
+  }
+  
+  @keyframes stroke {
+    100% {
+      stroke-dashoffset: 0;
+    }
+  }
+
+  .success-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(36px, 4vw, 52px);
+    font-weight: 300;
+    text-transform: uppercase;
+    color: var(--lime);
+    margin-bottom: 12px;
+  }
+
+  .success-message {
+    font-size: 14.5px;
+    color: var(--muted);
+    max-width: 400px;
+    line-height: 1.65;
+    margin-bottom: 32px;
+    font-weight: 300;
+  }
+
+  .success-btn {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--lime);
+    background: transparent;
+    border: 1px solid var(--lime);
+    padding: 12px 28px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .success-btn:hover {
+    background: var(--lime);
+    color: var(--bg);
+  }
+
+  /* ─── FOOTER ─── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 80px 40px 40px;
+    position: relative;
+    z-index: 1;
+    background-color: var(--bg);
+  }
+
+  .footer-top {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 48px;
+    margin-bottom: 60px;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  @media (min-width: 768px) {
+    .footer-top {
+      grid-template-columns: 1.6fr 1fr 1fr;
+      gap: 60px;
+    }
+  }
+
+  .footer-brand .logo {
+    font-family: 'Syne', sans-serif;
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: 3px;
+    color: var(--text);
+    margin-bottom: 16px;
+    display: block;
+  }
+  .footer-brand .logo span { color: var(--lime); }
+
+  .footer-brand p {
+    font-size: 13.5px;
+    color: var(--muted);
+    line-height: 1.75;
+    max-width: 280px;
+    margin-bottom: 20px;
+  }
+
+  .footer-ig {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--lime);
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+  .footer-ig:hover { opacity: 0.8; }
+
+  .footer-col h4 {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--text);
+    margin-bottom: 20px;
+  }
+
+  .footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+  .footer-col ul a {
+    font-size: 13.5px;
+    color: var(--muted);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+  .footer-col ul a:hover { color: var(--text); }
+
+  .footer-bottom {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    align-items: center;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding-top: 32px;
+    border-top: 1px solid var(--border);
+    font-size: 12.5px;
+    color: var(--muted);
+    opacity: 0.5;
+  }
+
+  @media (min-width: 640px) {
+    .footer-bottom {
+      flex-direction: row;
+      justify-content: space-between;
+      text-align: left;
+    }
+  }
+
+  .footer-bottom span:last-child {
+    font-family: 'Syne', sans-serif;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    font-size: 10px;
+    font-weight: 700;
+  }
+
+  /* ─── RESPONSIVE ─── */
+  @media (max-width: 1023px) {
+    .contact-section {
+      gap: 60px;
+      padding: 30px 24px 80px;
+    }
+    nav { padding: 0 24px; }
+    .nav-links { display: none; }
+    .hero-inner { padding: 80px 24px 30px; }
+  }
+
+  @media (max-width: 600px) {
+    .right-panel { padding: 44px 28px; }
+    footer { padding: 60px 24px 32px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Blueprint grid overlay -->
+<div class="grid-overlay"></div>
+
+<!-- Ambient background glows -->
+<div class="glow-container">
+  <div class="glow-blob-1"></div>
+  <div class="glow-blob-2"></div>
+</div>
+
+<!-- ─── NAVBAR ─── -->
+<nav>
+  <a href="/" class="nav-logo">APE<span>X</span></a>
+  <ul class="nav-links">
+    <li><a href="/">Home</a></li>
+    <li><a href="/#services">Services</a></li>
+    <li><a href="/#portfolio">Our Work</a></li>
+    <li><a href="/#why-choose-us">Why Us</a></li>
+    <li><a href="#" class="active">Contact</a></li>
+  </ul>
+  <a href="/" class="nav-cta">Go Home</a>
+</nav>
+
+<!-- ─── HERO ─── -->
+<section class="hero">
+  <div class="hero-bg-text">APEX</div>
+  <div class="hero-inner">
+    <div class="hero-label">Contact</div>
+    <h1>Start Your <em>Project.</em></h1>
+    <p>Let's align your brand goals with premium digital design. Fill out the brief below to start our geometric design journey.</p>
+  </div>
+</section>
+
+<!-- ─── MAIN CONTACT ─── -->
+<section class="contact-section">
+
+  <!-- LEFT -->
+  <div class="left-panel reveal">
+    <div class="section-eyebrow">What to expect</div>
+    <h2>Book Your Free<br>Project Brief.</h2>
+    <p class="subtitle">Start with a direct alignment call. We'll map out your brand requirements and show you exactly what we'll build — and what it'll cost. No obligation. No pitch. Just clarity.</p>
+
+    <div class="expect-label">What happens next</div>
+    <ul class="expect-list">
+      <li>
+        <div class="expect-icon">
+          <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2 6l3 3 5-5" stroke="#c8f400" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
+          <strong>Direct Alignment</strong>
+          <span>A 15-minute call directly with our lead designers to map out your brand requirements.</span>
+        </div>
+      </li>
+      <li>
+        <div class="expect-icon">
+          <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2 6l3 3 5-5" stroke="#c8f400" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
+          <strong>Modular Proposal</strong>
+          <span>A transparent, breakdown-oriented project estimate outlining pricing and deliverables.</span>
+        </div>
+      </li>
+      <li>
+        <div class="expect-icon">
+          <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2 6l3 3 5-5" stroke="#c8f400" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
+          <strong>Rapid Prototyping</strong>
+          <span>Static and motion layout frameworks delivered inside Figma within 5–7 business days.</span>
+        </div>
+      </li>
+      <li>
+        <div class="expect-icon">
+          <svg viewBox="0 0 12 12" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M2 6l3 3 5-5" stroke="#c8f400" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
+          <strong>Premium Execution</strong>
+          <span>Full-responsive, accessibility-optimized code with strict geometric alignments.</span>
+        </div>
+      </li>
+    </ul>
+
+    <div class="contact-meta">
+      <a href="mailto:teamapex.contact@gmail.com">
+        <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="1" y="3" width="14" height="10" rx="1" stroke="#888" stroke-width="1.2"/>
+          <path d="M1 4l7 5 7-5" stroke="#888" stroke-width="1.2" stroke-linecap="round"/>
+        </svg>
+        teamapex.contact@gmail.com
+      </a>
+      <a href="https://www.instagram.com/buildwithapexx?igsh=dXI4eGN4dWQ2YzJy" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <rect x="2" y="2" width="12" height="12" rx="3" stroke="#888" stroke-width="1.2"/>
+          <circle cx="8" cy="8" r="3" stroke="#888" stroke-width="1.2"/>
+          <circle cx="11.5" cy="4.5" r="0.8" fill="#888"/>
+        </svg>
+        @buildwithapex
+      </a>
+      <a href="https://wa.me/919951194132" target="_blank" rel="noopener noreferrer">
+        <svg viewBox="0 0 24 24" fill="#888" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20.52 3.449C18.25 1.18 15.22 0 12.001 0 5.373 0 0 5.373 0 12c0 2.164.564 4.279 1.637 6.138L.065 24l6.196-1.626A11.966 11.966 0 0 0 12.001 24c6.627 0 12-5.373 12-12 0-3.219-1.18-6.249-3.481-8.551zm-8.519 18.175c-1.89 0-3.738-.508-5.35-1.468l-.383-.228-3.974 1.043 1.062-3.876-.249-.395c-1.055-1.674-1.61-3.612-1.61-5.592 0-5.836 4.747-10.584 10.584-10.584 2.83 0 5.489 1.103 7.485 3.104 1.996 1.999 3.103 4.656 3.102 7.485-.001 5.835-4.748 10.584-10.583 10.584zm5.782-7.925c-.317-.159-1.874-.925-2.164-1.032-.291-.107-.502-.159-.714.159-.212.317-.82 1.032-.997 1.246-.176.213-.353.24-.653.08-.301-.161-1.272-.469-2.423-1.498-.895-.798-1.498-1.783-1.673-2.083-.176-.301-.019-.463.131-.613.134-.134.301-.35.452-.524.151-.174.201-.301.301-.502.1-.201.05-.375-.025-.524-.075-.149-.652-1.572-.894-2.152-.23-.55-.466-.475-.653-.484-.168-.008-.361-.01-.553-.01-.192 0-.505.071-.77.362-.265.291-1.011.989-1.011 2.41 0 1.421 1.034 2.793 1.178 2.984.144.192 2.037 3.111 4.936 4.368.69.297 1.229.475 1.649.608.692.22 1.322.189 1.821.115.553-.082 1.874-.766 2.136-1.507.262-.74.262-1.374.183-1.507-.079-.133-.291-.212-.607-.371z"/>
+        </svg>
+        WhatsApp
+      </a>
+    </div>
+
+    <div class="responds-badge">
+      <span class="dot"></span>
+      Responds within 24 hours
+    </div>
+  </div>
+
+  <!-- RIGHT (FORM) -->
+  <div class="right-panel reveal">
+    <!-- Corner crosshair marks -->
+    <div class="corner-plus tl"></div>
+    <div class="corner-plus tr"></div>
+    <div class="corner-plus bl"></div>
+    <div class="corner-plus br"></div>
+
+    <!-- Live Error Banner -->
+    <div class="error-banner" id="form-error-banner">
+      <svg viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="8" x2="12" y2="12" />
+        <line x1="12" y1="16" x2="12.01" y2="16" />
+      </svg>
+      <span id="error-message-text">Please resolve the highlighted fields below.</span>
+    </div>
+
+    <form id="apex-contact-form" novalidate>
+      <div class="form-row">
+        <div class="field">
+          <input type="text" id="name" placeholder=" " required>
+          <label for="name">Your Name <span>*</span></label>
+        </div>
+        <div class="field">
+          <input type="text" id="business-name" placeholder=" ">
+          <label for="business-name">Business Name</label>
+        </div>
+      </div>
+
+      <div class="field">
+        <input type="email" id="email" placeholder=" " required>
+        <label for="email">Email Address <span>*</span></label>
+      </div>
+
+      <div class="field">
+        <input type="tel" id="phone" placeholder=" ">
+        <label for="phone">Phone Number</label>
+      </div>
+
+      <div class="form-row">
+        <div class="field">
+          <select id="service" required>
+            <option value="" disabled selected></option>
+            <option value="Web Development">Web Development</option>
+            <option value="AI Automations">AI Automations</option>
+            <option value="Chatbot Integrations">Chatbot Integrations</option>
+          </select>
+          <label for="service">Select Service <span>*</span></label>
+        </div>
+        <div class="field">
+          <select id="biz-type">
+            <option value="" disabled selected></option>
+            <option value="Startup">Startup</option>
+            <option value="Agency">Agency</option>
+            <option value="Enterprise">Enterprise</option>
+            <option value="Freelancer">Freelancer</option>
+            <option value="Non-profit">Non-profit</option>
+          </select>
+          <label for="biz-type">Business Type</label>
+        </div>
+      </div>
+
+      <!-- Quick Timeline selection pills -->
+      <div class="pills-group">
+        <span class="pills-label">Project Timeline</span>
+        <div class="pills-container" id="timeline-pills">
+          <button type="button" class="pill-btn" data-value="< 1 Month">&lt; 1 Month</button>
+          <button type="button" class="pill-btn" data-value="1-3 Months">1-3 Months</button>
+          <button type="button" class="pill-btn" data-value="3+ Months">3+ Months</button>
+        </div>
+      </div>
+
+      <!-- Quick Budget selection pills -->
+      <div class="pills-group">
+        <span class="pills-label">Estimated Budget</span>
+        <div class="pills-container" id="budget-pills">
+          <button type="button" class="pill-btn" data-value="&lt; $10k">&lt; $10k</button>
+          <button type="button" class="pill-btn" data-value="$10k - $25k">$10k - $25k</button>
+          <button type="button" class="pill-btn" data-value="$25k - $50k">$25k - $50k</button>
+          <button type="button" class="pill-btn" data-value="$50k+">$50k+</button>
+        </div>
+      </div>
+
+      <div class="field">
+        <textarea id="brief" placeholder=" " required></textarea>
+        <label for="brief">Project Brief <span>*</span></label>
+      </div>
+
+      <button type="submit" class="submit-btn" id="submit-button">
+        <span id="btn-text">Start The Project</span>
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+      <p class="form-note">No obligation. No pitch. Just clarity.</p>
+    </form>
+
+    <!-- Success Message (Initially Hidden) -->
+    <div class="success-container" id="success-screen">
+      <svg class="success-icon-svg" viewBox="0 0 52 52">
+        <circle class="success-circle" cx="26" cy="26" r="25" />
+        <path class="success-check" d="M14.1 27.2l7.1 7.2 16.7-16.8" />
+      </svg>
+      <h3 class="success-title">Brief Received.</h3>
+      <p class="success-message">Your project details are synced to our design dashboard. A lead architect will review it and follow up within 24 hours.</p>
+      <button class="success-btn" onclick="resetContactForm()">Submit Another Request</button>
+    </div>
+  </div>
+
+</section>
+
+<!-- ─── FOOTER ─── -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <span class="logo">APE<span>X</span></span>
+      <p>Creating premium digital experiences powered by advanced AI, intelligent automation, and uncompromising innovation.</p>
+      <div style="display: flex; gap: 16px; align-items: center; margin-top: 8px;">
+        <a href="https://www.instagram.com/buildwithapexx?igsh=dXI4eGN4dWQ2YzJy" target="_blank" rel="noopener noreferrer" class="footer-ig">@BUILDWITHAPEX</a>
+        <span style="color: var(--muted); font-size: 11px;">·</span>
+        <a href="https://wa.me/919951194132" target="_blank" rel="noopener noreferrer" class="footer-ig">WhatsApp</a>
+      </div>
+    </div>
+
+    <div class="footer-col">
+      <h4>Navigation</h4>
+      <ul>
+        <li><a href="/">Home</a></li>
+        <li><a href="/#services">Services</a></li>
+        <li><a href="/#portfolio">Our Work</a></li>
+        <li><a href="/#why-choose-us">Why Us</a></li>
+        <li><a href="/#our-process">Our Process</a></li>
+      </ul>
+    </div>
+
+    <div class="footer-col">
+      <h4>Offerings</h4>
+      <ul>
+        <li><a href="#">Web Development</a></li>
+        <li><a href="#">AI Automations</a></li>
+        <li><a href="#">Chatbot Integration</a></li>
+        <li><a href="#">Terms &amp; Privacy</a></li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="footer-bottom">
+    <span>© 2026 Apex. All rights reserved.</span>
+    <span>Designed with absolute precision</span>
+  </div>
+</footer>
+
+<script>
+  // 1. Scroll reveal animation using IntersectionObserver
+  document.addEventListener("DOMContentLoaded", () => {
+    const reveals = document.querySelectorAll(".reveal");
+    
+    const observerOptions = {
+      root: null,
+      rootMargin: "0px",
+      threshold: 0.1
+    };
+    
+    const revealObserver = new IntersectionObserver((entries, observer) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add("active");
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+    
+    reveals.forEach(el => revealObserver.observe(el));
+    
+    // Initial active check for fast renders
+    setTimeout(() => {
+      reveals.forEach(el => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight) {
+          el.classList.add("active");
+        }
+      });
+    }, 100);
+  });
+
+  // 2. Floating label utility: toggle .has-value class based on value presence
+  const inputs = document.querySelectorAll('.field input, .field select, .field textarea');
+  inputs.forEach(input => {
+    const updateLabel = () => {
+      if (input.value.trim() !== '') {
+        input.classList.add('has-value');
+      } else {
+        input.classList.remove('has-value');
+      }
+    };
+    
+    input.addEventListener('input', updateLabel);
+    input.addEventListener('change', updateLabel);
+    
+    // Trigger check immediately (handles autocomplete, autofill, etc.)
+    setTimeout(updateLabel, 200);
+  });
+
+  // 3. Quick Pills Selector Handlers
+  function initPills(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return;
+    
+    const pills = container.querySelectorAll('.pill-btn');
+    pills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        // Toggle active style
+        const wasActive = pill.classList.contains('active');
+        pills.forEach(p => p.classList.remove('active'));
+        
+        if (!wasActive) {
+          pill.classList.add('active');
+        }
+      });
+    });
+  }
+  
+  initPills('timeline-pills');
+  initPills('budget-pills');
+
+  // 4. Form submission & API connection
+  const contactForm = document.getElementById("apex-contact-form");
+  const successScreen = document.getElementById("success-screen");
+  const errorBanner = document.getElementById("form-error-banner");
+  const errorMessageText = document.getElementById("error-message-text");
+  const submitButton = document.getElementById("submit-button");
+  const btnText = document.getElementById("btn-text");
+
+  contactForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    
+    // Reset banner and button state
+    errorBanner.style.display = "none";
+    
+    let isFormValid = true;
+    const requiredFields = contactForm.querySelectorAll("[required]");
+    
+    requiredFields.forEach(field => {
+      field.classList.remove("has-error");
+      
+      if (!field.value.trim()) {
+        isFormValid = false;
+        field.classList.add("has-error");
+        
+        // Add temporary shake animation
+        const fieldParent = field.closest('.field');
+        if (fieldParent) {
+          fieldParent.classList.add('shake');
+          setTimeout(() => fieldParent.classList.remove('shake'), 400);
+        }
+      }
+    });
+
+    // Custom brief length check (schema requires min 10 chars)
+    const briefField = document.getElementById("brief");
+    if (briefField.value.trim().length > 0 && briefField.value.trim().length < 10) {
+      isFormValid = false;
+      briefField.classList.add("has-error");
+      showError("Project Brief must be at least 10 characters long.");
+      return;
+    }
+    
+    if (!isFormValid) {
+      showError("Please fill out all required fields.");
+      return;
+    }
+
+    // Capture values
+    const fullName = document.getElementById("name").value.trim();
+    const company = document.getElementById("business-name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+    const service = document.getElementById("service").value;
+    const bizType = document.getElementById("biz-type").value;
+    const briefText = briefField.value.trim();
+
+    // Capture pills values
+    const activeTimelineBtn = document.querySelector("#timeline-pills .pill-btn.active");
+    const timeline = activeTimelineBtn ? activeTimelineBtn.dataset.value : "Not specified";
+    
+    const activeBudgetBtn = document.querySelector("#budget-pills .pill-btn.active");
+    const budget = activeBudgetBtn ? activeBudgetBtn.dataset.value : "Not specified";
+
+    // Split Full Name into First and Last Name (required by API validation schema)
+    const nameParts = fullName.trim().split(/\s+/);
+    let firstName = nameParts[0] || "";
+    let lastName = nameParts.slice(1).join(" ") || "";
+
+    // Zod schema enforces min length of 2
+    if (firstName.length > 0 && firstName.length < 2) {
+      firstName = (firstName + "  ").substring(0, 2);
+    }
+    if (lastName.length > 0 && lastName.length < 2) {
+      lastName = (lastName + "  ").substring(0, 2);
+    }
+
+    // Format message to bundle business type, budget, and timeline clearly for the admin dashboard
+    const formattedMessage = `Project Brief:\n${briefText}\n\n---\nProject Parameters:\n- Business Type: ${bizType || "Not specified"}\n- Estimated Budget: ${budget}\n- Timeline: ${timeline}`;
+
+    // Prepare JSON payload matching backend zod validator (ContactFormPayload schema)
+    const payload = {
+      firstName: firstName,
+      lastName: lastName,
+      email: email,
+      phone: phone || "",
+      company: company || "",
+      currentWebsite: "",
+      service: service,
+      message: formattedMessage,
+      website: "", // Honeypot field (must stay empty)
+      captchaToken: ""
+    };
+
+    // Disable button & show loading state
+    submitButton.disabled = true;
+    btnText.innerText = "Syncing Brief...";
+
+    try {
+      const response = await fetch("/api/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || `Error ${response.status}: Failed to submit request.`);
+      }
+
+      // Successful connection!
+      contactForm.style.display = "none";
+      successScreen.style.display = "flex";
+      
+    } catch (error) {
+      console.error("Submission failed:", error);
+      showError(error.message || "Failed to submit project brief. Please try again.");
+    } finally {
+      // Re-enable button
+      submitButton.disabled = false;
+      btnText.innerText = "Start The Project";
+    }
+  });
+
+  function showError(msg) {
+    errorMessageText.innerText = msg;
+    errorBanner.style.display = "flex";
+    errorBanner.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+
+  // 5. Reset form view
+  function resetContactForm() {
+    contactForm.reset();
+    
+    // Clear validation error flags
+    inputs.forEach(f => {
+      f.classList.remove("has-error");
+      f.classList.remove("has-value");
+    });
+    
+    // De-activate pills
+    document.querySelectorAll('.pill-btn').forEach(p => p.classList.remove('active'));
+    
+    // Hide success and display original form
+    successScreen.style.display = "none";
+    contactForm.style.display = "block";
+    errorBanner.style.display = "none";
+  }
+</script>
+
+</body>
+</html>

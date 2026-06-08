@@ -1,0 +1,47 @@
+{
+  "section": {
+    "label": "Our Work",
+    "title": "Selected Projects",
+    "subtitle": "A showcase of digital experiences that push boundaries and deliver results."
+  },
+  "projects": [
+    {
+      "title": "iShot Reels",
+      "category": "Web Development",
+      "gradient": "from-blue-600/90 to-purple-600/90",
+      "accent": "#3B82F6",
+      "href": "https://ishottreels.vercel.app/",
+      "slug": "ishot-reels",
+      "caseStudy": {
+        "description": "A modern video platform for creating and sharing short-form video content with advanced editing tools and social features.",
+        "challenges": [
+          "Building a real-time video editing interface in the browser",
+          "Optimizing video upload and processing performance",
+          "Implementing smooth playback across various devices",
+          "Creating an intuitive user experience for non-technical users"
+        ],
+        "solutions": [
+          "Implemented WebAssembly for client-side video processing",
+          "Used Next.js for optimal performance and SEO",
+          "Integrated Cloudflare for global CDN delivery",
+          "Designed a drag-and-drop interface with real-time previews"
+        ],
+        "results": [
+          "Reduced video processing time by 60%",
+          "Achieved 99.9% uptime with global CDN",
+          "Increased user engagement by 45%",
+          "Supported 10,000+ concurrent users"
+        ],
+        "technologies": [
+          "Next.js",
+          "React",
+          "WebAssembly",
+          "Cloudflare",
+          "FFmpeg",
+          "TailwindCSS"
+        ],
+        "liveUrl": "https://ishottreels.vercel.app/"
+      }
+    }
+  ]
+}

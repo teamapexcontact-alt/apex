@@ -1,0 +1,127 @@
+{
+  "name": "ApeX Studio",
+  "shortName": "ApeX",
+  "legalName": "ApeX Digital Studio",
+  "tagline": "Immersive Digital Experiences",
+  "description": "ApeX Studio is a premium digital agency building high-performance websites, AI-powered product visuals, 3D web experiences, chatbots, and full-stack automations for modern brands.",
+  "longDescription": "ApeX Studio is a next-generation digital agency for businesses that refuse to blend in. We combine world-class web development with cutting-edge AI tools to create digital experiences that perform, convert, and command attention. From pixel-perfect websites to intelligent chatbots and end-to-end AI automation, we give your brand the tech advantage it needs to outperform the competition.",
+  "url": "https://apex-studio-mu.vercel.app",
+  "ogImage": "/og-image.svg",
+  "email": "teamapex.contact@gmail.com",
+  "phone": "+91 9951194132",
+  "phoneRaw": "+919951194132",
+  "whatsapp": "919951194132",
+  "location": {
+    "city": "Hyderabad",
+    "region": "Telangana",
+    "country": "India",
+    "countryCode": "IN"
+  },
+  "foundingDate": "2023-01-01",
+  "locale": "en-IN",
+  "language": "en",
+  "currency": "INR",
+  "timezone": "Asia/Kolkata",
+  "socialLinks": {
+    "instagram": "https://www.instagram.com/buildwithapexx",
+    "whatsapp": "https://wa.me/919951194132",
+    "twitter": "",
+    "linkedin": "",
+    "github": "",
+    "youtube": "",
+    "facebook": ""
+  },
+  "keywords": [
+    "digital agency",
+    "premium web design",
+    "3D web experiences",
+    "AI product posters",
+    "brand identity",
+    "AI automation",
+    "chatbot development",
+    "high performance websites",
+    "Next.js development",
+    "WebGL experiences",
+    "Hyderabad digital agency",
+    "AI integration services",
+    "cinematic web design",
+    "conversion focused websites",
+    "premium website development"
+  ],
+  "services": [
+    {
+      "id": "web-development",
+      "name": "Web Development",
+      "description": "High-performance, modern websites and web apps built with Next.js, React, and TypeScript — fast, responsive, and crafted to convert visitors into customers."
+    },
+    {
+      "id": "ai-automation",
+      "name": "AI Automation",
+      "description": "Streamline workflows with intelligent automation. We build AI-powered pipelines that save time, reduce errors, and scale your operations end-to-end."
+    },
+    {
+      "id": "ai-product-posters",
+      "name": "AI Product Posters",
+      "description": "Cinematic AI-powered visuals that make products look futuristic, premium, and unforgettable across every channel."
+    },
+    {
+      "id": "chatbot-integration",
+      "name": "Chatbot Integration",
+      "description": "Deploy smart, conversational chatbots that engage your audience 24/7 — from customer support to lead generation, fully tailored to your brand voice."
+    },
+    {
+      "id": "branding-identity",
+      "name": "Branding & Identity",
+      "description": "Building bold visual identities that give brands a unique voice and a lasting impression across every touchpoint."
+    },
+    {
+      "id": "ui-ux-design",
+      "name": "UI/UX Design",
+      "description": "Designing intuitive digital experiences with sleek interfaces, cohesive design systems, and seamless user journeys."
+    },
+    {
+      "id": "performance",
+      "name": "Performance Optimization",
+      "description": "Optimizing websites for lightning-fast speed, smooth 60fps interactions, and top-tier Core Web Vitals."
+    },
+    {
+      "id": "3d-web",
+      "name": "3D & WebGL Experiences",
+      "description": "Immersive WebGL worlds that captivate audiences and elevate your brand into cinematic digital space."
+    }
+  ],
+  "process": [
+    { "step": 1, "name": "Discovery", "description": "Deep-dive research into your industry, competitors, and stakeholders to align on objectives and target outcomes." },
+    { "step": 2, "name": "Strategy", "description": "Translating insights into a product roadmap, technical architecture, and KPIs aligned with your business goals." },
+    { "step": 3, "name": "Design", "description": "Beautiful, accessible, intuitive user experiences — high-fidelity wireframes, typography, and interactive prototypes." },
+    { "step": 4, "name": "Development", "description": "Engineering state-of-the-art web interfaces using Next.js, TypeScript, and component-scoped styles with semantic HTML." },
+    { "step": 5, "name": "Testing", "description": "Rigorous QA across browsers and devices, asset optimization, accessibility audits, and code consistency checks." },
+    { "step": 6, "name": "Launch", "description": "Optimized production builds with zero downtime, SEO metadata, analytics, and project handoff." }
+  ],
+  "faqs": [
+    {
+      "question": "What does ApeX Studio do?",
+      "answer": "ApeX Studio is a premium digital agency specializing in high-performance websites, AI product posters, 3D web experiences, AI automations, chatbots, and brand identity systems. We help modern brands build stronger, more conversion-focused digital presences."
+    },
+    {
+      "question": "How long does a typical project take?",
+      "answer": "Most projects take between 3 and 8 weeks depending on scope. A focused landing page can ship in 2 weeks, while a full brand identity plus custom web platform typically takes 6 to 8 weeks. We share a clear timeline during the discovery phase."
+    },
+    {
+      "question": "What technologies do you use?",
+      "answer": "We build with modern, production-grade tooling: Next.js, React, TypeScript, Tailwind CSS, Framer Motion, Supabase, WebGL/Three.js for 3D, and the OpenAI / Anthropic APIs for AI features. We choose the right tool for each project rather than forcing a stack."
+    },
+    {
+      "question": "Do you work with early-stage startups?",
+      "answer": "Yes. We work with funded startups, scale-ups, and established brands. For early-stage teams, we often start with a focused landing page or MVP that can grow into a full platform as traction builds."
+    },
+    {
+      "question": "Where are you based? Do you work remotely?",
+      "answer": "ApeX Studio is based in Hyderabad, India, and we work with clients worldwide. Our process is fully remote-friendly with async updates, weekly demos, and a shared project workspace."
+    },
+    {
+      "question": "How much does a project cost?",
+      "answer": "Project investment depends on scope, but most engagements start from a focused landing page and scale up to full brand + platform builds. Reach out through the contact form for a tailored proposal within 48 hours."
+    }
+  ]
+}

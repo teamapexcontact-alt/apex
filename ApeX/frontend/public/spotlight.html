@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dramatic Stage Spotlight — ApeX</title>
+  <!-- Load Bebas Neue and Inter Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+  
+  <style>
+    /* == RESET & SCENE BASE == */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    body, html {
+      width: 100%;
+      height: 100%;
+      background: #000000;
+      overflow: hidden;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .spotlight-stage {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background: #000000;
+      overflow: hidden;
+    }
+
+    /* == LIGHT SOURCE == */
+    .light-source {
+      position: absolute;
+      top: -3px;
+      right: 18%; /* 18% from the right edge */
+      width: 7px;
+      height: 7px;
+      background: #ffffff;
+      border-radius: 50%;
+      z-index: 10;
+      box-shadow: 
+        0 0 8px 4px #fff,
+        0 0 24px 10px rgba(180, 230, 255, 0.95),
+        0 0 70px 28px rgba(120, 200, 255, 0.50),
+        0 0 150px 65px rgba(80, 170, 230, 0.25);
+      animation: sourceFlicker 4s ease-in-out infinite;
+    }
+
+    /* Flicker animation 4s ease-in-out infinite */
+    @keyframes sourceFlicker {
+      0%, 100% { opacity: 1; }
+      47% { opacity: 0.85; }
+      50% { opacity: 1; }
+      73% { opacity: 0.93; }
+    }
+
+    /* == AMBIENT GLOW == */
+    .ambient-glow {
+      position: absolute;
+      top: -100px;
+      right: calc(18% - 200px);
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(100, 200, 255, 0.18) 0%, rgba(60, 140, 200, 0.06) 50%, transparent 70%);
+      filter: blur(40px);
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    /* == GOD RAYS == */
+    .god-rays-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      pointer-events: none;
+      will-change: opacity;
+    }
+
+    /* == FLOOR REFLECTION == */
+    .floor-reflection {
+      position: absolute;
+      bottom: 0;
+      right: 28%;
+      width: 800px;
+      height: 160px;
+      transform: translateX(50%);
+      background: radial-gradient(ellipse 70% 55% at 55% 100%, rgba(80, 160, 220, 0.18) 0%, rgba(50, 120, 190, 0.07) 55%, transparent 80%);
+      filter: blur(22px);
+      z-index: 3;
+    }
+
+    /* == STARS == */
+    #starCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      pointer-events: none;
+    }
+
+    /* == DUST PARTICLES == */
+    .dust {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 4;
+    }
+
+    .dust-particle {
+      position: absolute;
+      top: -20px;
+      border-radius: 50%;
+      background: rgba(180, 220, 255, 0.65);
+      will-change: transform, opacity;
+      animation: drift linear infinite;
+    }
+
+    @keyframes drift {
+      0% {
+        transform: translate(0, 0);
+        opacity: 0;
+      }
+      8% {
+        opacity: 1;
+      }
+      92% {
+        opacity: 0.35;
+      }
+      100% {
+        transform: translate(calc(var(--dx) * 80px), 110vh);
+        opacity: 0;
+      }
+    }
+
+    /* == CONTENT BLOCK == */
+    .scene-content {
+      position: absolute;
+      z-index: 20;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      width: 90%;                /* constrain within viewport */
+      max-width: 900px;
+      padding: 0 24px;
+      
+      /* Fade-up on load */
+      animation: fadeUp 1s cubic-bezier(0.22, 1, 0.36, 1) 0.3s both;
+    }
+
+    @keyframes fadeUp {
+      from {
+        opacity: 0;
+        transform: translate(-50%, calc(-50% + 28px));
+      }
+      to {
+        opacity: 1;
+        transform: translate(-50%, -50%);
+      }
+    }
+
+    /* Headline Styles */
+    .headline {
+      font-family: 'Bebas Neue', sans-serif;
+      font-weight: 400;
+      text-transform: uppercase;
+      text-align: center;
+      color: #ffffff;
+      line-height: 0.95;
+      letter-spacing: 0.04em;
+      text-shadow: 0 0 60px rgba(120,200,255,0.2), 0 4px 16px rgba(0,0,0,0.7);
+      width: 100%;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    .headline .line1 {
+      display: block;
+      font-size: clamp(2rem, 6vw, 5rem);
+      white-space: normal;       /* allow wrapping */
+      word-break: break-word;
+    }
+
+    .headline .line2 {
+      display: block;
+      font-size: clamp(3rem, 9vw, 7.2rem);
+      text-align: center;
+    }
+
+    /* Subline Styles */
+    .subline {
+      font-family: 'Inter', sans-serif;
+      font-weight: 300; /* Inter 300 */
+      font-size: clamp(0.95rem, 1.8vw, 1.15rem);
+      color: rgba(255, 255, 255, 0.62);
+      letter-spacing: 0.03em;
+      line-height: 1.65;
+      margin-top: 1.6rem;
+      margin-bottom: 2.4rem;
+      text-align: center;
+    }
+
+    /* CTA BUTTON — outlined slide-fill style */
+    .cta {
+      background: transparent;
+      color: #d4f800;
+      border: 1.5px solid #d4f800;
+      font-family: 'Inter', sans-serif;
+      font-weight: 500;
+      font-size: 0.9rem;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      padding: 0.85rem 2.6rem;
+      border-radius: 0; /* sharp corners */
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      outline: none;
+      transition: color 0.25s ease, transform 0.1s ease;
+    }
+
+    .cta::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #d4f800;
+      transform: translateX(-101%);
+      transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+      z-index: 0;
+    }
+
+    .cta:hover::before {
+      transform: translateX(0);
+    }
+
+    .cta:hover {
+      color: #000000;
+    }
+
+    .cta:active {
+      transform: scale(0.98);
+    }
+
+    /* Float button text and arrow above slide layer */
+    .cta span {
+      position: relative;
+      z-index: 1;
+    }
+
+    .cta span.arrow {
+      position: relative;
+      z-index: 1;
+      transition: transform 0.25s ease;
+      display: inline-block;
+    }
+
+    .cta:hover span.arrow {
+      transform: translateX(4px);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="spotlight-stage">
+    
+    <!-- Ambient Radial Glow behind Source -->
+    <div class="ambient-glow"></div>
+
+    <!-- Canvas for 90 Stars -->
+    <canvas id="starCanvas"></canvas>
+
+    <!-- GOD RAYS SVG (Apex at x=1180, y=0 fanning bottom-left) -->
+    <svg class="god-rays-svg" id="raysSvg" viewBox="0 0 1440 900" preserveAspectRatio="none">
+      <defs>
+        <!-- Gradients -->
+        <linearGradient id="g-main" x1="0.82" y1="0" x2="0.38" y2="1" gradientUnits="objectBoundingBox">
+          <stop offset="0%" stop-color="#c8ecff" stop-opacity="0.60" />
+          <stop offset="22%" stop-color="#88ccf0" stop-opacity="0.25" />
+          <stop offset="60%" stop-color="#4aa8e0" stop-opacity="0.09" />
+          <stop offset="100%" stop-color="#2070c0" stop-opacity="0" />
+        </linearGradient>
+
+        <linearGradient id="g-warm" x1="0.82" y1="0" x2="0.40" y2="1" gradientUnits="objectBoundingBox">
+          <stop offset="0%" stop-color="#ffe8c0" stop-opacity="0.65" />
+          <stop offset="16%" stop-color="#ffcc80" stop-opacity="0.32" />
+          <stop offset="55%" stop-color="#e09050" stop-opacity="0.08" />
+          <stop offset="100%" stop-color="#c06030" stop-opacity="0" />
+        </linearGradient>
+
+        <linearGradient id="g-bloom" x1="0.82" y1="0" x2="0.28" y2="1" gradientUnits="objectBoundingBox">
+          <stop offset="0%" stop-color="#a0d8ff" stop-opacity="0.28" />
+          <stop offset="45%" stop-color="#60b0e8" stop-opacity="0.06" />
+          <stop offset="100%" stop-color="#3090d0" stop-opacity="0" />
+        </linearGradient>
+
+        <!-- Blurs -->
+        <filter id="blur20">
+          <feGaussianBlur stdDeviation="20" />
+        </filter>
+        <filter id="blur8">
+          <feGaussianBlur stdDeviation="8" />
+        </filter>
+        <filter id="blur3">
+          <feGaussianBlur stdDeviation="3" />
+        </filter>
+      </defs>
+
+      <!-- Ray 1: Bloom -->
+      <polygon points="1180,0 0,900 1240,900" fill="url(#g-bloom)" filter="url(#blur20)" opacity="0.85" />
+      
+      <!-- Ray 2: Main cone -->
+      <polygon points="1180,0 0,900 1280,900" fill="url(#g-main)" filter="url(#blur8)" opacity="0.78" />
+
+      <!-- Ray 3: Far right -->
+      <polygon points="1180,0 1110,900 1280,900" fill="url(#g-main)" filter="url(#blur8)" opacity="0.28" />
+
+      <!-- Ray 4: Mid-right -->
+      <polygon points="1180,0 1010,900 880,900" fill="url(#g-main)" filter="url(#blur3)" opacity="0.38" />
+
+      <!-- Ray 5: Center-right -->
+      <polygon points="1180,0 840,900 730,900" fill="url(#g-main)" filter="url(#blur3)" opacity="0.48" />
+
+      <!-- Ray 6: Warm center -->
+      <polygon points="1180,0 600,900 480,900" fill="url(#g-warm)" filter="url(#blur3)" opacity="0.82" />
+
+      <!-- Ray 7: Razor inner (no blur) -->
+      <polygon points="1180,0 555,900 595,900" fill="url(#g-warm)" opacity="0.58" />
+
+      <!-- Ray 8: Center-left -->
+      <polygon points="1180,0 380,900 270,900" fill="url(#g-main)" filter="url(#blur3)" opacity="0.42" />
+
+      <!-- Ray 9: Far left -->
+      <polygon points="1180,0 60,900 -80,900" fill="url(#g-main)" filter="url(#blur8)" opacity="0.22" />
+    </svg>
+
+    <!-- Tiny Glowing White Source Dot -->
+    <div class="light-source"></div>
+
+    <!-- Floor Reflection Shimmer -->
+    <div class="floor-reflection"></div>
+
+    <!-- Dust Particle Container -->
+    <div class="dust" id="dustContainer"></div>
+
+    <!-- Centered Content -->
+    <div class="scene-content">
+      <h1 class="headline">
+        <span class="line1">Elevate Your Brand.</span>
+        <span class="line1">Accelerate Your</span>
+        <span class="line2">Growth.</span>
+      </h1>
+      <p class="subline">Partner with ApeX to create digital experiences that drive lasting impact.</p>
+      <button class="cta" onclick="alert('Join Now triggered')">
+        <span>Join Now</span>
+        <span class="arrow">→</span>
+      </button>
+    </div>
+
+  </div>
+
+  <script>
+    // == SVG BREATHE EFFECT (Opacity oscillates 0.92-1.0 via requestAnimationFrame) ==
+    const raysSvg = document.getElementById('raysSvg');
+    let breatheTime = 0;
+
+    function breathe() {
+      breatheTime += 0.007;
+      const opacity = 0.96 + Math.sin(breatheTime) * 0.04;
+      if (raysSvg) {
+        raysSvg.style.opacity = opacity;
+      }
+      requestAnimationFrame(breathe);
+    }
+    breathe();
+
+    // == SPAWN 65 FLOATING DUST PARTICLES DRIFTING DOWN-LEFT ==
+    const dustContainer = document.getElementById('dustContainer');
+    const particleCount = 65;
+
+    for (let i = 0; i < particleCount; i++) {
+      const particle = document.createElement('span');
+      particle.className = 'dust-particle';
+
+      // Spawn inside the fanning cone area (centered towards right/center)
+      const startLeft = Math.random() * 80 + 20; 
+      particle.style.left = `${startLeft}vw`;
+
+      // Negative delay to pre-drift particles
+      const delay = Math.random() * -18; 
+      particle.style.animationDelay = `${delay}s`;
+
+      // Random duration from 7s to 18s
+      const duration = Math.random() * 11 + 7;
+      particle.style.animationDuration = `${duration}s`;
+
+      // Drifting DOWN-LEFT (negative dx offset)
+      const dx = -(Math.random() * 3.5 + 1.5);
+      particle.style.setProperty('--dx', dx);
+
+      // Random particle scale (1px to 3px)
+      const size = Math.random() * 2 + 1; 
+      particle.style.width = `${size}px`;
+      particle.style.height = `${size}px`;
+
+      dustContainer.appendChild(particle);
+    }
+
+    // == CANVAS FOR 90 STARS (z-index 2) ==
+    const canvas = document.getElementById('starCanvas');
+    const ctx = canvas.getContext('2d');
+    const stars = [];
+
+    // Initialize 90 star dots
+    for (let i = 0; i < 90; i++) {
+      stars.push({
+        x: Math.random(),
+        y: Math.random(),
+        size: Math.random() * 1.2 + 0.5, // 0.5px to 1.7px radius
+        opacity: Math.random() * 0.5 + 0.2 // 0.2 to 0.7
+      });
+    }
+
+    function resizeCanvas() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      drawStars();
+    }
+
+    function drawStars() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      stars.forEach(star => {
+        ctx.fillStyle = `rgba(200, 230, 255, ${star.opacity})`;
+        ctx.beginPath();
+        ctx.arc(star.x * canvas.width, star.y * canvas.height, star.size, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    }
+
+    window.addEventListener('resize', resizeCanvas);
+    resizeCanvas();
+  </script>
+</body>
+</html>

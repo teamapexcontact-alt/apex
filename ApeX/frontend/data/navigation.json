@@ -1,0 +1,24 @@
+{
+  "links": [
+    {
+      "label": "Home",
+      "href": "#hero"
+    },
+    {
+      "label": "Services",
+      "href": "#services"
+    },
+    {
+      "label": "Our Work",
+      "href": "#portfolio"
+    },
+    {
+      "label": "Why Us",
+      "href": "#why-choose-us"
+    },
+    {
+      "label": "Our Process",
+      "href": "#our-process"
+    }
+  ]
+}

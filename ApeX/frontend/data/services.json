@@ -1,0 +1,40 @@
+{
+  "section": {
+    "label": "Services",
+    "title": "Crafted for the Future",
+    "subtitle": "Precision-built digital experiences that merge cinematic aesthetics with measurable business impact."
+  },
+  "services": [
+    {
+      "number": "01",
+      "title": "Web Development",
+      "description": "Crafting fast, modern, and conversion-focused websites that elevate your brand presence.",
+      "icon": "cube"
+    },
+    {
+      "number": "02",
+      "title": "AI Product Poster",
+      "description": "Creating cinematic AI-powered visuals that make products look futuristic, premium, and unforgettable.",
+      "icon": "spark"
+    },
+    {
+      "number": "03",
+      "title": "Branding & Identity",
+      "description": "Building bold visual identities that give brands a unique voice and lasting impression.",
+      "icon": "layers"
+    },
+    {
+      "number": "04",
+      "title": "UI/UX Designs",
+      "description": "Designing intuitive digital experiences with sleek interfaces and seamless user journeys.",
+      "icon": "bolt"
+    }
+    ,
+    {
+      "number": "05",
+      "title": "Performance",
+      "description": "Optimizing websites for lightning-fast speed, smooth interactions, and top-tier user experience.",
+      "icon": "bolt"
+    }
+  ]
+}
