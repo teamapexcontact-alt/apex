@@ -123,10 +123,10 @@ export async function checkRateLimit(
     };
   } catch (error) {
     const errMsg = String(error);
-    const isFirestoreDisabled = errMsg.includes("SERVICE_DISABLED") || errMsg.includes("PERMISSION_DENIED") || errMsg.includes("firestore.googleapis.com");
+    const isFirestoreUnavailable = errMsg.includes("SERVICE_DISABLED") || errMsg.includes("PERMISSION_DENIED") || errMsg.includes("firestore.googleapis.com") || errMsg.includes("NOT_FOUND");
 
-    if (isFirestoreDisabled) {
-      console.warn("Rate limiting unavailable (Firestore not enabled). Allowing request.");
+    if (isFirestoreUnavailable) {
+      console.warn("Rate limiting unavailable (Firestore not available). Allowing request.");
       return {
         allowed: true,
         limit: finalConfig.maxRequests,

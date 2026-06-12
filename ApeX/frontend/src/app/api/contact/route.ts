@@ -138,10 +138,10 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     const errMsg = String(error);
-    const isFirestoreDisabled = errMsg.includes("SERVICE_DISABLED") || errMsg.includes("firestore.googleapis.com");
+    const isFirestoreUnavailable = errMsg.includes("SERVICE_DISABLED") || errMsg.includes("PERMISSION_DENIED") || errMsg.includes("firestore.googleapis.com") || errMsg.includes("NOT_FOUND");
 
-    if (isFirestoreDisabled) {
-      console.error("[API Contact] Firestore is not enabled.");
+    if (isFirestoreUnavailable) {
+      console.error("[API Contact] Firestore is not available.");
       return NextResponse.json(
         { error: "Database service is not configured. Contact the site owner at teamapex.contact@gmail.com." },
         { status: 503 }
