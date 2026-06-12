@@ -137,8 +137,22 @@ export async function POST(request: Request) {
       created_at: new Date().toISOString(),
     });
   } catch (error) {
+    const errMsg = String(error);
+    const isFirestoreDisabled = errMsg.includes("SERVICE_DISABLED") || errMsg.includes("firestore.googleapis.com");
+
+    if (isFirestoreDisabled) {
+      console.error("[API Contact] Firestore is not enabled.");
+      return NextResponse.json(
+        { error: "Database service is not configured. Contact the site owner at teamapex.contact@gmail.com." },
+        { status: 503 }
+      );
+    }
+
     console.error("[API Contact] Firestore insert error:", error);
-    return NextResponse.json({ error: "Failed to save contact request." }, { status: 500 });
+    return NextResponse.json(
+      { error: "Failed to save contact request. Please try again later." },
+      { status: 500 }
+    );
   }
 
   try {
