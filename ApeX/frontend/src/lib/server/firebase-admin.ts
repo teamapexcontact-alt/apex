@@ -21,9 +21,7 @@ function getFirebaseAdmin(): App {
   }
 
   if (!getApps().length) {
-    const parsedKey = privateKey!.startsWith("-----BEGIN")
-      ? privateKey!
-      : privateKey!.replace(/\\n/g, "\n");
+    const parsedKey = privateKey!.replace(/\\n/g, "\n");
     app = initializeApp({
       credential: cert({ projectId, clientEmail, privateKey: parsedKey }),
     });
