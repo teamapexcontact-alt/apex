@@ -57,7 +57,7 @@ export default function TermsPage() {
 
           <div>
             <h2 className="text-white text-xl font-semibold mb-3">8. Contact</h2>
-            <p>For questions about these terms, contact us at <a href="mailto:hello@buildwithapex.app" className="text-[#d4f000] hover:underline">hello@buildwithapex.app</a>.</p>
+            <p>For questions about these terms, contact us at <a href="mailto:teamapex.contact@gmail.com" className="text-[#d4f000] hover:underline">teamapex.contact@gmail.com</a>.</p>
           </div>
         </section>
       </div>

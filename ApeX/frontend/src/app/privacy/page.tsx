@@ -42,7 +42,7 @@ export default function PrivacyPage() {
 
           <div>
             <h2 className="text-white text-xl font-semibold mb-3">5. Your Rights</h2>
-            <p>You have the right to access, correct, or delete your personal data. You may also opt out of marketing communications at any time. To exercise these rights, contact us at hello@buildwithapex.app.</p>
+            <p>You have the right to access, correct, or delete your personal data. You may also opt out of marketing communications at any time. To exercise these rights, contact us at teamapex.contact@gmail.com.</p>
           </div>
 
           <div>
@@ -52,7 +52,7 @@ export default function PrivacyPage() {
 
           <div>
             <h2 className="text-white text-xl font-semibold mb-3">7. Contact</h2>
-            <p>For questions about this privacy policy, contact us at <a href="mailto:hello@buildwithapex.app" className="text-[#d4f000] hover:underline">hello@buildwithapex.app</a>.</p>
+            <p>For questions about this privacy policy, contact us at <a href="mailto:teamapex.contact@gmail.com" className="text-[#d4f000] hover:underline">teamapex.contact@gmail.com</a>.</p>
           </div>
         </section>
       </div>
