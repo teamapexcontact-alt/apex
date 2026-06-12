@@ -138,7 +138,7 @@ export async function POST(request: Request) {
     });
   } catch (error) {
     const errMsg = String(error);
-    const isFirestoreUnavailable = errMsg.includes("SERVICE_DISABLED") || errMsg.includes("PERMISSION_DENIED") || errMsg.includes("firestore.googleapis.com") || errMsg.includes("NOT_FOUND");
+    const isFirestoreUnavailable = errMsg.includes("SERVICE_DISABLED") || errMsg.includes("PERMISSION_DENIED") || errMsg.includes("firestore.googleapis.com") || errMsg.includes("NOT_FOUND") || errMsg.includes("FAILED_PRECONDITION");
 
     if (isFirestoreUnavailable) {
       console.error("[API Contact] Firestore is not available.");

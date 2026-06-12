@@ -1,0 +1,35 @@
+{
+  "indexes": [
+    {
+      "collectionGroup": "rate_limit_log",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "ip_hash", "order": "ASCENDING" },
+        { "fieldPath": "endpoint", "order": "ASCENDING" },
+        { "fieldPath": "submitted_at", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "login_rate_limit",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "key", "order": "ASCENDING" },
+        { "fieldPath": "attempted_at", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "contact_requests",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "created_at", "order": "DESCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "admins",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "user_id", "order": "ASCENDING" }
+      ]
+    }
+  ]
+}
