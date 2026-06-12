@@ -5,9 +5,9 @@
   "tagline": "Immersive Digital Experiences",
   "description": "ApeX Studio is a premium digital agency building high-performance websites, AI-powered product visuals, 3D web experiences, chatbots, and full-stack automations for modern brands.",
   "longDescription": "ApeX Studio is a next-generation digital agency for businesses that refuse to blend in. We combine world-class web development with cutting-edge AI tools to create digital experiences that perform, convert, and command attention. From pixel-perfect websites to intelligent chatbots and end-to-end AI automation, we give your brand the tech advantage it needs to outperform the competition.",
-  "url": "https://apex-studio-mu.vercel.app",
+  "url": "https://buildwithapex.app",
   "ogImage": "/og-image.svg",
-  "email": "teamapex.contact@gmail.com",
+  "email": "hello@buildwithapex.app",
   "phone": "+91 9951194132",
   "phoneRaw": "+919951194132",
   "whatsapp": "919951194132",
@@ -25,9 +25,9 @@
   "socialLinks": {
     "instagram": "https://www.instagram.com/buildwithapexx",
     "whatsapp": "https://wa.me/919951194132",
-    "twitter": "",
-    "linkedin": "",
-    "github": "",
+    "twitter": "https://x.com/buildwithapex",
+    "linkedin": "https://linkedin.com/company/buildwithapex",
+    "github": "https://github.com/teamapexcontact-alt",
     "youtube": "",
     "facebook": ""
   },
@@ -109,7 +109,7 @@
     },
     {
       "question": "What technologies do you use?",
-      "answer": "We build with modern, production-grade tooling: Next.js, React, TypeScript, Tailwind CSS, Framer Motion, Supabase, WebGL/Three.js for 3D, and the OpenAI / Anthropic APIs for AI features. We choose the right tool for each project rather than forcing a stack."
+      "answer": "We build with modern, production-grade tooling: Next.js, React, TypeScript, Tailwind CSS, Framer Motion, Firebase, WebGL/Three.js for 3D, and the OpenAI / Anthropic APIs for AI features. We choose the right tool for each project rather than forcing a stack."
     },
     {
       "question": "Do you work with early-stage startups?",

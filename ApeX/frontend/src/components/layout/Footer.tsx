@@ -173,6 +173,24 @@ export function Footer() {
               </li>
             </ul>
           </div>
+
+          <div>
+            <h2 className="text-[0.8rem] tracking-[0.1em] text-white font-semibold mb-[1rem] uppercase">
+              Legal
+            </h2>
+            <ul className="space-y-0" style={{ listStyle: "none", padding: 0, margin: 0 }}>
+              <li>
+                <Link href="/privacy" className="block text-[0.85rem] text-[#a3a3a3] leading-[2] hover:text-white transition-colors">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/terms" className="block text-[0.85rem] text-[#a3a3a3] leading-[2] hover:text-white transition-colors">
+                  Terms & Conditions
+                </Link>
+              </li>
+            </ul>
+          </div>
         </nav>
       </div>
 

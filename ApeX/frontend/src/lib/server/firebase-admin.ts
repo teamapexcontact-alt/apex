@@ -13,14 +13,19 @@ function getFirebaseAdmin(): App {
   const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
   const privateKey = process.env.FIREBASE_PRIVATE_KEY;
 
-  if (!projectId || !clientEmail || !privateKey) {
-    console.warn("[Firebase Admin] Missing env vars. Firebase Admin will be null.");
+  const isPlaceholder = (v: string | undefined) => !v || v.includes("YOUR_");
+
+  if (isPlaceholder(projectId) || isPlaceholder(clientEmail) || isPlaceholder(privateKey)) {
+    console.warn("[Firebase Admin] Not configured (placeholder or missing env vars). Firebase Admin will be null.");
     return null as unknown as App;
   }
 
   if (!getApps().length) {
+    const parsedKey = privateKey!.startsWith("-----BEGIN")
+      ? privateKey!
+      : privateKey!.replace(/\\n/g, "\n");
     app = initializeApp({
-      credential: cert({ projectId, clientEmail, privateKey: privateKey.replace(/\\n/g, "\n") }),
+      credential: cert({ projectId, clientEmail, privateKey: parsedKey }),
     });
   } else {
     app = getApps()[0];

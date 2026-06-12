@@ -124,9 +124,7 @@ export function baseMetadata(): Metadata {
     },
     icons: {
       icon: [
-        { url: '/favicon.ico', sizes: 'any' },
-        { url: '/icon', type: 'image/svg+xml', sizes: 'any' },
-        { url: '/icon-32.png', sizes: '32x32', type: 'image/png' },
+        { url: '/icon', type: 'image/png', sizes: '32x32' },
         { url: '/icon-192.png', sizes: '192x192', type: 'image/png' },
       ],
       apple: [{ url: '/apple-icon', sizes: '180x180', type: 'image/png' }],
