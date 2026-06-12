@@ -119,7 +119,7 @@ export default async function RootLayout({
             rel="stylesheet"
             href={href}
             media="print"
-            {...({ onLoad: "this.media='all'" } as Record<string, string>)}
+            onLoad={(e) => { (e.currentTarget as HTMLLinkElement).media = "all"; }}
             nonce={nonce}
           />
         ))}
@@ -141,7 +141,7 @@ export default async function RootLayout({
           rel="stylesheet"
           href={DEFERRED_TABLER_HREF}
           media="print"
-          {...({ onLoad: "this.media='all'" } as Record<string, string>)}
+          onLoad={(e) => { (e.currentTarget as HTMLLinkElement).media = "all"; }}
           nonce={nonce}
         />
         <noscript>
