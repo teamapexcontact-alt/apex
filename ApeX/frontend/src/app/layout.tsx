@@ -4,6 +4,7 @@ import { DM_Sans, Syne, Instrument_Serif, Manrope, Bebas_Neue, Montserrat, Space
 import { Analytics } from "@/components/Analytics";
 import { SkipToContent } from "@/components/layout/SkipToContent";
 import { JsonLd } from "@/components/SEO/JsonLd";
+import { DeferredStylesheet } from "@/components/DeferredStyles";
 import {
   baseMetadata,
   viewport as seoViewport,
@@ -114,14 +115,7 @@ export default async function RootLayout({
         ))}
 
         {DEFERRED_FONT_HREFS.map((href) => (
-          <link
-            key={`${href}-async`}
-            rel="stylesheet"
-            href={href}
-            media="print"
-            onLoad={(e) => { (e.currentTarget as HTMLLinkElement).media = "all"; }}
-            nonce={nonce}
-          />
+          <DeferredStylesheet key={`${href}-async`} href={href} nonce={nonce} />
         ))}
 
         {DEFERRED_FONT_HREFS.map((href) => (
@@ -137,13 +131,7 @@ export default async function RootLayout({
           nonce={nonce}
           fetchPriority="low"
         />
-        <link
-          rel="stylesheet"
-          href={DEFERRED_TABLER_HREF}
-          media="print"
-          onLoad={(e) => { (e.currentTarget as HTMLLinkElement).media = "all"; }}
-          nonce={nonce}
-        />
+        <DeferredStylesheet href={DEFERRED_TABLER_HREF} nonce={nonce} />
         <noscript>
           <link rel="stylesheet" href={DEFERRED_TABLER_HREF} />
         </noscript>
