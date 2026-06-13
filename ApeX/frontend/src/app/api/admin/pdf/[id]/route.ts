@@ -20,7 +20,7 @@ async function verifyAdminSession(): Promise<{ authorized: boolean; error?: stri
     const db = getDb();
     if (!db) return { authorized: false, error: 'DB not configured' };
 
-    const snapshot = await db.collection('admins').where('user_id', '==', decoded.uid).limit(1).get();
+    const snapshot = await db.collection('admin').where('user_id', '==', decoded.uid).limit(1).get();
     if (snapshot.empty) return { authorized: false, error: 'Not an admin' };
 
     return { authorized: true };

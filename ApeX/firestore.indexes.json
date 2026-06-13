@@ -25,7 +25,7 @@
       ]
     },
     {
-      "collectionGroup": "admins",
+      "collectionGroup": "admin",
       "queryScope": "COLLECTION",
       "fields": [
         { "fieldPath": "user_id", "order": "ASCENDING" }

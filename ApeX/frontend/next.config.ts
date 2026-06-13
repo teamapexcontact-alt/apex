@@ -6,7 +6,7 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       { protocol: 'https', hostname: 'ishottreels.vercel.app' },
-      { protocol: 'https', hostname: 'apex-studio-mu.vercel.app' },
+      { protocol: 'https', hostname: 'buildwithapex.app' },
       { protocol: 'https', hostname: 'vercel.app' },
       { protocol: 'https', hostname: '**.vercel.app' },
     ],

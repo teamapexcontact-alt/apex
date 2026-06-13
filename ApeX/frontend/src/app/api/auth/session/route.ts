@@ -24,7 +24,7 @@ export async function POST(request: Request) {
   try {
     const decodedToken = await adminAuth.verifyIdToken(idToken);
 
-    const adminsRef = db.collection('admins');
+    const adminsRef = db.collection('admin');
     const snapshot = await adminsRef.where('user_id', '==', decodedToken.uid).limit(1).get();
 
     if (snapshot.empty) {

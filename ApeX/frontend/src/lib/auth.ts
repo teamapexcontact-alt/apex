@@ -22,7 +22,7 @@ export async function isAdmin(user?: { uid?: string; email?: string } | null) {
   if (!db || !user || !user.uid) return false;
 
   try {
-    const snapshot = await db.collection('admins').where('user_id', '==', user.uid).limit(1).get();
+    const snapshot = await db.collection('admin').where('user_id', '==', user.uid).limit(1).get();
     return !snapshot.empty;
   } catch (err) {
     console.error('Error checking admin status:', err);

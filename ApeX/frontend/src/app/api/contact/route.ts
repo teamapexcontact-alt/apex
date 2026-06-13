@@ -25,7 +25,7 @@ function verifyOrigin(request: Request): boolean {
   const referer = request.headers.get("referer");
   const origin = request.headers.get("origin");
   const host = request.headers.get("host");
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://apex-studio-mu.vercel.app";
+  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://buildwithapex.app";
   const isDev = process.env.NODE_ENV === "development";
 
   if (isDev) {
