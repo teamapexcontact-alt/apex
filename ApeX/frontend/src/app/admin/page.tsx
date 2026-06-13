@@ -4,6 +4,7 @@ import type { Metadata } from 'next';
 import { protectAdminRoute } from '@/lib/auth';
 import AdminDashboard from '@/components/admin/AdminDashboard';
 import { generatePageMetadata } from '@/lib/seo';
+import { siteConfig } from '@/lib/seo';
 import '@/components/admin/admin.css';
 
 export const dynamic = 'force-dynamic';
@@ -23,9 +24,9 @@ export default async function AdminPage() {
   }
 
   const cookieStore = await cookies();
-  const host = cookieStore.get('x-forwarded-host')?.value;
-  const proto = cookieStore.get('x-forwarded-proto')?.value || 'https';
-  const origin = host ? `${proto}://${host}` : process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+  const origin = process.env.VERCEL_URL
+    ? `https://${process.env.VERCEL_URL}`
+    : siteConfig.url;
 
   interface AdminContactResponse {
     success: boolean;
