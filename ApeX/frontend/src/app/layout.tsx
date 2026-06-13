@@ -1,5 +1,6 @@
 import { headers } from "next/headers";
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import { DM_Sans, Syne, Instrument_Serif, Manrope, Bebas_Neue, Montserrat, Space_Mono } from "next/font/google";
 import { Analytics } from "@/components/Analytics";
 import { SkipToContent } from "@/components/layout/SkipToContent";
@@ -146,6 +147,13 @@ export default async function RootLayout({
       <body className="antialiased">
         <SkipToContent />
         {children}
+        <link rel="stylesheet" href="https://apexchatbot-admin.vercel.app/widget.css" />
+        <Script
+          src="https://apexchatbot-admin.vercel.app/widget.js"
+          strategy="afterInteractive"
+          data-project-id="HQ6reM0NSObJWNLwoj8P"
+          data-api-url="https://apexchatbot-admin.vercel.app"
+        />
         <Analytics nonce={nonce} />
       </body>
     </html>

@@ -8,8 +8,8 @@ export function middleware(request: NextRequest) {
   // Create CSP header with nonce for inline scripts
   const cspHeader = [
     "default-src 'self'",
-    `script-src 'self' 'nonce-${nonce}' https://www.googletagmanager.com https://challenges.cloudflare.com`,
-    "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com",
+    `script-src 'self' 'nonce-${nonce}' https://www.googletagmanager.com https://challenges.cloudflare.com https://apexchatbot-admin.vercel.app`,
+    "style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com https://apexchatbot-admin.vercel.app",
     "img-src 'self' data:",
     "connect-src 'self' https://*.firebaseio.com https://*.googleapis.com https://*.firebaseapp.com https://*.firebasestorage.app https://*.resend.com https://*.upstash.io https://www.googletagmanager.com https://challenges.cloudflare.com",
     "font-src 'self' https://cdn.jsdelivr.net https://fonts.gstatic.com",
