@@ -22,14 +22,14 @@ type SortDir = 'asc' | 'desc';
 type ChartRange = 7 | 14 | 30;
 
 interface AdminDashboardProps {
-  initialSubmissions: Submission[];
-  initialNextCursor: string | null;
-  initialHasMore: boolean;
-  stats: {
+  initialSubmissions?: Submission[];
+  initialNextCursor?: string | null;
+  initialHasMore?: boolean;
+  stats?: {
     total: number;
     today: number;
     week: number;
-  };
+  } | null;
 }
 
 const STATUSES: SubmissionStatus[] = ['new', 'contacted', 'archived'];
@@ -175,21 +175,22 @@ function exportToCsv(rows: Submission[], filename: string) {
 }
 
 export default function AdminDashboard({
-  initialSubmissions,
-  initialNextCursor,
-  initialHasMore,
-  stats,
+  initialSubmissions = [],
+  initialNextCursor = null,
+  initialHasMore = false,
+  stats: initialStats = null,
 }: AdminDashboardProps) {
   const router = useRouter();
 
   const [submissions, setSubmissions] = useState<Submission[]>(initialSubmissions);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
   const [error, setError] = useState('');
   const [nextCursor, setNextCursor] = useState<string | null>(initialNextCursor);
   const [hasMore, setHasMore] = useState(initialHasMore);
   const [loadedIds] = useState<Set<string>>(() => new Set(initialSubmissions.map((s) => s.id)));
+  const [stats, setStats] = useState<{ total: number; today: number; week: number } | null>(initialStats);
 
   const [query, setQuery] = useState('');
   const [statusFilter, setStatusFilter] = useState<'all' | SubmissionStatus>('all');
@@ -208,6 +209,49 @@ export default function AdminDashboard({
     setNotesMap(loadNotesMap());
     setActivity(loadActivity());
   }, []);
+
+  useEffect(() => {
+    if (initialSubmissions.length === 0) {
+      fetchData();
+    } else {
+      setLoading(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  async function fetchData(cursor?: string) {
+    try {
+      if (!cursor) setLoading(true);
+      else setLoadingMore(true);
+
+      const params = new URLSearchParams({ limit: '20' });
+      if (cursor) params.set('cursor', cursor);
+      if (!cursor) params.set('includeStats', 'true');
+
+      const response = await fetch(`/api/admin/contact?${params}`);
+      if (!response.ok) {
+        const data = await response.json().catch(() => ({}));
+        throw new Error(data.error || `HTTP ${response.status}`);
+      }
+      const result = await response.json();
+
+      if (cursor) {
+        setSubmissions((prev) => [...prev, ...result.data.submissions]);
+        result.data.submissions.forEach((s: Submission) => loadedIds.add(s.id));
+      } else {
+        setSubmissions(result.data.submissions);
+        setStats(result.data.stats);
+        result.data.submissions.forEach((s: Submission) => loadedIds.add(s.id));
+      }
+      setNextCursor(result.data.nextCursor);
+      setHasMore(result.data.hasMore);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load data');
+    } finally {
+      setLoading(false);
+      setLoadingMore(false);
+    }
+  }
 
   useEffect(() => {
     if (Object.keys(statusMap).length > 0 || window.localStorage.getItem(STORAGE_KEY)) {
@@ -580,23 +624,23 @@ export default function AdminDashboard({
           <StatCard
             icon="ti ti-inbox"
             accent="#d4f000"
-            value={stats.total}
+            value={stats?.total ?? '—'}
             label="Total Submissions"
-            trend={stats.total > 0 ? 'Live' : '—'}
-            trendKind={stats.total > 0 ? 'up' : 'neutral'}
+            trend={stats && stats.total > 0 ? 'Live' : '—'}
+            trendKind={stats && stats.total > 0 ? 'up' : 'neutral'}
           />
           <StatCard
             icon="ti ti-bolt"
             accent="#00e5c3"
-            value={stats.today}
+            value={stats?.today ?? '—'}
             label="Today"
-            trend={stats.today > 0 ? 'New' : 'Quiet'}
-            trendKind={stats.today > 0 ? 'up' : 'neutral'}
+            trend={stats && stats.today > 0 ? 'New' : 'Quiet'}
+            trendKind={stats && stats.today > 0 ? 'up' : 'neutral'}
           />
           <StatCard
             icon="ti ti-calendar-week"
             accent="#b794f4"
-            value={stats.week}
+            value={stats?.week ?? '—'}
             label="This Week"
             trend={`${statusCounts.new} new`}
             trendKind={statusCounts.new > 0 ? 'up' : 'neutral'}
