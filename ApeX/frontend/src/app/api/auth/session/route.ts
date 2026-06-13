@@ -28,6 +28,7 @@ export async function POST(request: Request) {
     const snapshot = await adminsRef.where('user_id', '==', decodedToken.uid).limit(1).get();
 
     if (snapshot.empty) {
+      console.error(`[API Session] UID ${decodedToken.uid} not found in admins collection`);
       return NextResponse.json({ error: 'Unauthorized.' }, { status: 403 });
     }
 
@@ -47,6 +48,10 @@ export async function POST(request: Request) {
     return response;
   } catch (error) {
     console.error('[API Session] Failed to create session:', error);
+    const errMsg = String(error);
+    if (errMsg.includes('NOT_FOUND') || errMsg.includes('FAILED_PRECONDITION')) {
+      return NextResponse.json({ error: 'Database configuration error.' }, { status: 503 });
+    }
     return NextResponse.json({ error: 'Invalid or expired token.' }, { status: 401 });
   }
 }
