@@ -15,7 +15,6 @@ import {
   servicesItemListJsonLd,
   faqJsonLd,
   portfolioJsonLd,
-  siteConfig,
 } from "@/lib/seo";
 import "./globals.css";
 
@@ -153,7 +152,7 @@ export default async function RootLayout({
           src="https://apexchatbot-admin.vercel.app/widget.js"
           strategy="afterInteractive"
           data-project-id="HQ6reM0NSObJWNLwoj8P"
-          data-api-url={siteConfig.url}
+          data-api-url="https://apexchatbot-admin.vercel.app"
         />
         <Analytics nonce={nonce} />
       </body>

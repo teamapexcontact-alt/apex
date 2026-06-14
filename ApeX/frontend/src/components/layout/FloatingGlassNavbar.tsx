@@ -1,14 +1,25 @@
 "use client";
 
 import { motion, AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { UnderlineLink } from "@/components/ui/UnderlineLink";
 import { Button } from "@/components/ui/Button";
 import { useActiveSection } from "@/hooks/useActiveSection";
 import { useNavigation } from "@/hooks/useContent";
 
+const MOBILE_BREAKPOINT = 768;
+
 export function FloatingGlassNavbar() {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const mq = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`);
+    setIsMobile(mq.matches);
+    const handler = (e: MediaQueryListEvent) => setIsMobile(e.matches);
+    mq.addEventListener("change", handler);
+    return () => mq.removeEventListener("change", handler);
+  }, []);
   const { data: navData, loading } = useNavigation();
   const sectionIds = navData?.links.map(link => link.href.replace('#', '')) || [];
   const activeSection = useActiveSection(sectionIds);
@@ -131,12 +142,13 @@ export function FloatingGlassNavbar() {
 
 
         {/* Mobile Menu Button */}
+        {isMobile && (
         <button
           type="button"
           aria-expanded={mobileOpen}
           aria-controls="mobile-menu"
           aria-label={mobileOpen ? "Close menu" : "Open menu"}
-          className="md:hidden flex flex-col gap-1.5 p-2 min-w-[36px] min-h-[36px] items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#D4FF00]"
+          className="flex flex-col gap-1.5 p-2 min-w-[36px] min-h-[36px] items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-[#D4FF00]"
           onClick={() => setMobileOpen(!mobileOpen)}
         >
           <span
@@ -149,6 +161,7 @@ export function FloatingGlassNavbar() {
             className={`block w-5 h-px bg-white transition-transform duration-300 ${mobileOpen ? "-rotate-45 -translate-y-1.5" : ""}`}
           />
         </button>
+        )}
       </motion.nav>
 
       {/* Mobile Menu */}
