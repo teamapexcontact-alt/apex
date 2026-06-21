@@ -18,7 +18,7 @@ type Project = {
 const PROJECTS_DATA: Project[] = [
   {
     id: "ishot-fleets",
-    name: "iShot Fleets",
+    name: "iShotReels",
     tag: "Enterprise Logistics",
     description: "Cinematic dashboard and fleet visualizer designed to streamline global transportation logistics at scale.",
     url: "ishot-fleets.apex",
