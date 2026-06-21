@@ -50,6 +50,13 @@ export function Button({
 
   if ("href" in props && props.href) {
     const { href, ...rest } = props;
+    if (href.endsWith(".html")) {
+      return (
+        <a href={href} className={classes} {...rest}>
+          {children}
+        </a>
+      );
+    }
     return (
       <Link href={href} className={classes} {...rest}>
         {children}

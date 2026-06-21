@@ -26,6 +26,26 @@ const PROJECTS_DATA: Project[] = [
     gradient: "linear-gradient(135deg, #3b0066 0%, #0d0033 50%, #001f4d 100%)",
     accent: "#D4FF00",
   },
+  {
+    id: "apex-pickles",
+    name: "Apex Pickles",
+    tag: "Demo Project",
+    description: "A vibrant pickle brand demo showcasing bold product visuals, playful animations, and a conversion-focused landing experience.",
+    url: "apexpickles.buildwithapex.app",
+    link: "https://apexpickles.buildwithapex.app/",
+    gradient: "linear-gradient(135deg, #8B0000 0%, #4a0e0e 50%, #2d0a0a 100%)",
+    accent: "#FFD700",
+  },
+  {
+    id: "laundry-services",
+    name: "Laundry Services",
+    tag: "On-Demand Platform",
+    description: "A modern laundry service platform with real-time booking, order tracking, and seamless customer experience.",
+    url: "apexlaundary.buildwithapex.app",
+    link: "https://apexlaundary.buildwithapex.app/",
+    gradient: "linear-gradient(135deg, #004d40 0%, #00251a 50%, #00120d 100%)",
+    accent: "#00E5C3",
+  },
 ];
 
 function ProjectCard({ project, index }: { project: Project; index: number }) {
